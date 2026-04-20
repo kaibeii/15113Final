@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Outfit Picker",
+    "slug": "outfit-picker",
+    "sdkVersion": "54.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to photograph your clothing items.",
+        "NSPhotoLibraryUsageDescription": "Used to select clothing photos from your library."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#EEEDFE"
+      },
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE"]
+    },
+    "plugins": [
+      ["expo-camera", { "cameraPermission": "Allow Outfit Picker to access your camera." }],
+      ["expo-image-picker", { "photosPermission": "Allow Outfit Picker to access your photos." }]
+    ]
+  }
+}

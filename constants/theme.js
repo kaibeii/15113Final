@@ -59,3 +59,42 @@ export const FILTER_OPTIONS = [
   { label: 'Shoes',   value: 'shoes' },
   { label: 'Hats',    value: 'hat' },
 ];
+
+// Color families — dot color shown on item cards
+export const COLOR_SWATCHES = {
+  black:      '#1a1a1a',
+  white:      '#f0f0f0',
+  grey:       '#9e9e9e',
+  navy:       '#1a237e',
+  blue:       '#2196f3',
+  red:        '#e53935',
+  green:      '#43a047',
+  yellow:     '#fdd835',
+  orange:     '#fb8c00',
+  pink:       '#e91e63',
+  purple:     '#8e24aa',
+  brown:      '#6d4c41',
+  beige:      '#d7ccc8',
+  multicolor: null, // rendered as gradient
+  pattern:    null, // rendered as pattern indicator
+  unknown:    '#cccccc',
+};
+
+export const COLOR_LABELS = {
+  black:      'Black',
+  white:      'White',
+  grey:       'Grey',
+  navy:       'Navy',
+  blue:       'Blue',
+  red:        'Red',
+  green:      'Green',
+  yellow:     'Yellow',
+  orange:     'Orange',
+  pink:       'Pink',
+  purple:     'Purple',
+  brown:      'Brown',
+  beige:      'Beige',
+  multicolor: 'Multicolor',
+  pattern:    'Pattern',
+  unknown:    'Unknown',
+};
