@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWardrobe } from '../context/WardrobeContext';
@@ -71,6 +72,21 @@ export default function CameraScreen({ navigation }) {
   const cameraRef = useRef(null);
   const { addItem } = useWardrobe();
 
+  // Reset camera state when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset all camera-related state when navigating back
+      setCapturedUri(null);
+      setSelectedType(null);
+      setSelectedColor(null);
+      setDescription('');
+      setUploading(false);
+      setFacing('back');
+      // Force camera remount by incrementing key
+      setCameraKey((k) => k + 1);
+    }, [])
+  );
+
   if (!permission) return <View style={styles.center} />;
 
   if (!permission.granted) {
@@ -87,14 +103,20 @@ export default function CameraScreen({ navigation }) {
   }
 
   const takePicture = async () => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current) {
+      console.error('Camera ref not available');
+      Alert.alert('Camera error', 'Camera is not ready. Please wait a moment and try again.');
+      return;
+    }
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
+      console.log('Photo captured:', photo.uri);
       setCapturedUri(photo.uri);
       setSelectedType(null);
       setSelectedColor(null);
       setDescription('');
     } catch (e) {
+      console.error('takePicture error:', e);
       Alert.alert('Camera error', 'Could not take photo. Please try again.');
       setCapturedUri(null);
     }
@@ -129,14 +151,17 @@ export default function CameraScreen({ navigation }) {
     setUploading(true);
     try {
       const colorToSend = selectedColor || 'unknown';
+      console.log('Uploading item...');
       const { item, suggestedColor: detected } = await uploadClothingItem(
         capturedUri, selectedType, colorToSend, description
       );
       if (!selectedColor && detected) item.color = detected;
       addItem(item);
+      console.log('Item added, resetting camera...');
       retake();
       navigation.navigate('Wardrobe');
     } catch (e) {
+      console.error('Upload error:', e);
       const mockItem = {
         _id: Date.now().toString(),
         imageUrl: capturedUri,
@@ -146,6 +171,7 @@ export default function CameraScreen({ navigation }) {
         createdAt: new Date().toISOString(),
       };
       addItem(mockItem);
+      console.log('Fallback item added, resetting camera...');
       retake();
       navigation.navigate('Wardrobe');
     } finally {
@@ -267,37 +293,37 @@ export default function CameraScreen({ navigation }) {
   // --- Camera viewfinder ---
   return (
     <View style={styles.cameraContainer}>
-      <CameraView key={cameraKey} ref={cameraRef} style={styles.camera} facing={facing}>
-        <SafeAreaView edges={['top']}>
-          <View style={styles.camTopBar}>
-            <TouchableOpacity
-              style={styles.camIconBtn}
-              onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))}
-            >
-              <Ionicons name="camera-reverse-outline" size={26} color={COLORS.white} />
-            </TouchableOpacity>
-            <View style={styles.camHintPill}>
-              <Text style={styles.camHintText}>Centre your item in frame</Text>
-            </View>
-            <TouchableOpacity style={styles.camIconBtn} onPress={pickFromLibrary}>
-              <Ionicons name="images-outline" size={24} color={COLORS.white} />
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-
-        <View style={styles.viewfinder}>
-          <View style={[styles.corner, styles.cornerTL]} />
-          <View style={[styles.corner, styles.cornerTR]} />
-          <View style={[styles.corner, styles.cornerBL]} />
-          <View style={[styles.corner, styles.cornerBR]} />
-        </View>
-
-        <SafeAreaView edges={['bottom']} style={styles.shutterArea}>
-          <TouchableOpacity style={styles.shutter} onPress={takePicture} activeOpacity={0.8}>
-            <View style={styles.shutterInner} />
+      <CameraView key={cameraKey} ref={cameraRef} style={styles.camera} facing={facing} />
+      
+      <SafeAreaView edges={['top']} style={styles.camTopBarContainer}>
+        <View style={styles.camTopBar}>
+          <TouchableOpacity
+            style={styles.camIconBtn}
+            onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))}
+          >
+            <Ionicons name="camera-reverse-outline" size={26} color={COLORS.white} />
           </TouchableOpacity>
-        </SafeAreaView>
-      </CameraView>
+          <View style={styles.camHintPill}>
+            <Text style={styles.camHintText}>Centre your item in frame</Text>
+          </View>
+          <TouchableOpacity style={styles.camIconBtn} onPress={pickFromLibrary}>
+            <Ionicons name="images-outline" size={24} color={COLORS.white} />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+
+      <View style={styles.viewfinder}>
+        <View style={[styles.corner, styles.cornerTL]} />
+        <View style={[styles.corner, styles.cornerTR]} />
+        <View style={[styles.corner, styles.cornerBL]} />
+        <View style={[styles.corner, styles.cornerBR]} />
+      </View>
+
+      <SafeAreaView edges={['bottom']} style={styles.shutterArea}>
+        <TouchableOpacity style={styles.shutter} onPress={takePicture} activeOpacity={0.8}>
+          <View style={styles.shutterInner} />
+        </TouchableOpacity>
+      </SafeAreaView>
     </View>
   );
 }

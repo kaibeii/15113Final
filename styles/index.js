@@ -231,9 +231,15 @@ const styles = StyleSheet.create({
 
   cameraContainer: {
     flex: 1,
+    backgroundColor: COLORS.black,
   },
   camera: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+  },
+  camTopBarContainer: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    zIndex: 10,
   },
   camTopBar: {
     flexDirection: 'row',
@@ -261,6 +267,7 @@ const styles = StyleSheet.create({
     left: '12%',
     right: '12%',
     bottom: '25%',
+    zIndex: 10,
   },
   corner: {
     position: 'absolute',
@@ -296,6 +303,7 @@ const styles = StyleSheet.create({
     bottom: 0, left: 0, right: 0,
     alignItems: 'center',
     paddingBottom: SPACING.xl + 8,
+    zIndex: 10,
   },
   shutter: {
     width: 68, height: 68,
@@ -602,6 +610,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
+  savedSection: {
+    marginTop: SPACING.xl,
+  },
+  savedSectionTitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: COLORS.black,
+    marginBottom: SPACING.md,
+  },
 
   // ── CLOTHING ITEM COMPONENT ─────────────────────────────────────────────
 
@@ -772,6 +789,82 @@ const styles = StyleSheet.create({
   },
   outfitCardDeleteBtn: {
     padding: SPACING.xs,
+  },
+
+  // ── OUTFIT MODAL ───────────────────────────────────────────────────────────
+
+  outfitModalTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: COLORS.black,
+    textAlign: 'center',
+    marginBottom: SPACING.xs,
+  },
+  outfitModalDate: {
+    fontSize: 14,
+    color: COLORS.gray400,
+    textAlign: 'center',
+    marginBottom: SPACING.xl,
+  },
+  outfitModalItems: {
+    gap: SPACING.lg,
+  },
+  outfitModalItem: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    borderWidth: 0.5,
+    borderColor: COLORS.gray100,
+    gap: SPACING.md,
+  },
+  outfitModalItemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.gray50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  outfitModalItemImageContent: {
+    width: '100%',
+    height: '100%',
+  },
+  outfitModalItemMeta: {
+    flex: 1,
+    gap: SPACING.xs,
+  },
+  outfitModalItemLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: COLORS.gray400,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  outfitModalItemType: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.black,
+  },
+  outfitModalItemColor: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  outfitModalItemColorText: {
+    fontSize: 14,
+    color: COLORS.gray600,
+  },
+  outfitModalItemDescription: {
+    fontSize: 14,
+    color: COLORS.gray600,
+    lineHeight: 20,
+  },
+  outfitModalItemEmpty: {
+    fontSize: 14,
+    color: COLORS.gray400,
+    fontStyle: 'italic',
   },
 
 });

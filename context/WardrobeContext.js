@@ -9,7 +9,16 @@ export function WardrobeProvider({ children }) {
   const [error, setError] = useState(null);
 
   const addItem = useCallback((item) => {
-    setItems((prev) => [item, ...prev]);
+    setItems((prev) => {
+      // Check if item with this ID already exists
+      const exists = prev.some((existingItem) => existingItem._id === item._id);
+      if (!exists) {
+        // If item doesn't exist, add it
+        return [item, ...prev];
+      }
+      // If it exists, replace it (don't create duplicates)
+      return prev.map((existingItem) => (existingItem._id === item._id ? item : existingItem));
+    });
   }, []);
 
   const removeItem = useCallback((id) => {

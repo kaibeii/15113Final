@@ -16,8 +16,6 @@ import OutfitCard from '../components/OutfitCard';
 import styles from '../styles/index';
 import { COLORS } from '../constants/theme';
 
-const TABS = ['Generated', 'Saved'];
-
 function OutfitSlot({ item, label }) {
   return (
     <View style={styles.outfitSlotWrap}>
@@ -38,7 +36,6 @@ function OutfitSlot({ item, label }) {
 
 export default function OutfitsScreen({ navigation }) {
   const { items, savedOutfits, saveOutfit, removeSavedOutfit } = useWardrobe();
-  const [activeTab, setActiveTab] = useState('Generated');
   const [currentOutfit, setCurrentOutfit] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -103,104 +100,81 @@ export default function OutfitsScreen({ navigation }) {
         <Text style={styles.screenTitle}>Outfits</Text>
       </View>
 
-      <View style={styles.outfitsTabRow}>
-        {TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.chip, activeTab === tab && styles.chipActive]}
-            onPress={() => setActiveTab(tab)}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.chipText, activeTab === tab && styles.chipTextActive]}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
       <ScrollView
         style={styles.outfitsScroll}
         contentContainerStyle={styles.outfitsScrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {activeTab === 'Generated' ? (
-          <>
-            <View style={styles.outfitGeneratedCard}>
-              {generating ? (
-                <View style={styles.outfitGeneratingState}>
-                  <ActivityIndicator size="large" color={COLORS.purple600} />
-                  <Text style={styles.outfitGeneratingText}>Picking your outfit…</Text>
-                </View>
-              ) : currentOutfit ? (
-                <>
-                  <Text style={styles.outfitGeneratedTitle}>Today's outfit</Text>
-                  <View style={styles.outfitSlots}>
-                    <OutfitSlot item={getRefreshedOutfit(currentOutfit).top}    label="Top" />
-                    <OutfitSlot item={getRefreshedOutfit(currentOutfit).bottom} label="Bottom" />
-                    <OutfitSlot item={getRefreshedOutfit(currentOutfit).shoes}  label="Shoes" />
-                  </View>
-                  <View style={styles.outfitActions}>
-                    <TouchableOpacity
-                      style={[styles.outfitActionPrimary, isSaved && styles.outfitActionSaved]}
-                      onPress={handleSave}
-                      disabled={isSaved}
-                    >
-                      <Ionicons name={isSaved ? 'checkmark' : 'bookmark-outline'} size={16} color={COLORS.white} />
-                      <Text style={styles.outfitActionTextPrimary}>{isSaved ? 'Saved' : 'Save outfit'}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.outfitActionSecondary} onPress={handleGenerate}>
-                      <Ionicons name="refresh-outline" size={16} color={COLORS.purple600} />
-                      <Text style={styles.outfitActionTextSecondary}>Regenerate</Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              ) : (
-                <View style={styles.outfitEmptyWrap}>
-                  <View style={styles.outfitEmptySlots}>
-                    {['Top', 'Bottom', 'Shoes'].map((l) => (
-                      <View key={l} style={styles.outfitEmptySlot}>
-                        <Ionicons name="shirt-outline" size={22} color={COLORS.gray100} />
-                      </View>
-                    ))}
-                  </View>
-                  <Text style={styles.outfitEmptyText}>Tap below to generate your first outfit</Text>
-                </View>
-              )}
+        {/* Generated outfit section */}
+        <View style={styles.outfitGeneratedCard}>
+          {generating ? (
+            <View style={styles.outfitGeneratingState}>
+              <ActivityIndicator size="large" color={COLORS.purple600} />
+              <Text style={styles.outfitGeneratingText}>Picking your outfit…</Text>
             </View>
-
-            <TouchableOpacity
-              style={[styles.generateBtn, generating && styles.generateBtnDisabled]}
-              onPress={handleGenerate}
-              disabled={generating}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="sparkles-outline" size={18} color={COLORS.white} />
-              <Text style={styles.generateBtnText}>Generate outfit</Text>
-            </TouchableOpacity>
-
-            {!hasEnoughItems() && (
-              <Text style={styles.generateHintText}>
-                Add at least 1 top, 1 bottom, and 1 pair of shoes to get started.
-              </Text>
-            )}
-          </>
-        ) : (
-          <>
-            {savedOutfits.length === 0 ? (
-              <View style={styles.savedEmptyWrap}>
-                <Ionicons name="bookmark-outline" size={40} color={COLORS.gray100} />
-                <Text style={styles.savedEmptyTitle}>No saved outfits</Text>
-                <Text style={styles.savedEmptyText}>
-                  Generate an outfit and tap "Save outfit" to keep it here.
-                </Text>
+          ) : currentOutfit ? (
+            <>
+              <Text style={styles.outfitGeneratedTitle}>Today's outfit</Text>
+              <View style={styles.outfitSlots}>
+                <OutfitSlot item={getRefreshedOutfit(currentOutfit).top}    label="Top" />
+                <OutfitSlot item={getRefreshedOutfit(currentOutfit).bottom} label="Bottom" />
+                <OutfitSlot item={getRefreshedOutfit(currentOutfit).shoes}  label="Shoes" />
               </View>
-            ) : (
-              savedOutfits.map((outfit) => (
-                <OutfitCard key={outfit.id} outfit={getRefreshedOutfit(outfit)} onDelete={removeSavedOutfit} />
-              ))
-            )}
-          </>
+              <View style={styles.outfitActions}>
+                <TouchableOpacity
+                  style={[styles.outfitActionPrimary, isSaved && styles.outfitActionSaved]}
+                  onPress={handleSave}
+                  disabled={isSaved}
+                >
+                  <Ionicons name={isSaved ? 'checkmark' : 'bookmark-outline'} size={16} color={COLORS.white} />
+                  <Text style={styles.outfitActionTextPrimary}>{isSaved ? 'Saved' : 'Save outfit'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.outfitActionSecondary} onPress={handleGenerate}>
+                  <Ionicons name="refresh-outline" size={16} color={COLORS.purple600} />
+                  <Text style={styles.outfitActionTextSecondary}>Regenerate</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <View style={styles.outfitEmptyWrap}>
+              <View style={styles.outfitEmptySlots}>
+                {['Top', 'Bottom', 'Shoes'].map((l) => (
+                  <View key={l} style={styles.outfitEmptySlot}>
+                    <Ionicons name="shirt-outline" size={22} color={COLORS.gray100} />
+                  </View>
+                ))}
+              </View>
+              <Text style={styles.outfitEmptyText}>Tap below to generate your first outfit</Text>
+            </View>
+          )}
+        </View>
+
+        <TouchableOpacity
+          style={[styles.generateBtn, generating && styles.generateBtnDisabled]}
+          onPress={handleGenerate}
+          disabled={generating}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="sparkles-outline" size={18} color={COLORS.white} />
+          <Text style={styles.generateBtnText}>Generate outfit</Text>
+        </TouchableOpacity>
+
+        {!hasEnoughItems() && (
+          <Text style={styles.generateHintText}>
+            Add at least 1 top, 1 bottom, and 1 pair of shoes to get started.
+          </Text>
         )}
+
+        {/* Saved outfits section */}
+        {savedOutfits.length > 0 && (
+          <View style={styles.savedSection}>
+            <Text style={styles.savedSectionTitle}>Saved outfits</Text>
+            {savedOutfits.map((outfit) => (
+              <OutfitCard key={outfit.id} outfit={getRefreshedOutfit(outfit)} onDelete={removeSavedOutfit} />
+            ))}
+          </View>
+        )}
+
         <View style={{ height: 24 }} />
       </ScrollView>
     </SafeAreaView>
