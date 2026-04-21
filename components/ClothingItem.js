@@ -4,7 +4,6 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Alert,
   Modal,
   ScrollView,
@@ -12,14 +11,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  COLORS,
-  RADIUS,
-  SPACING,
-  COLOR_SWATCHES,
-  COLOR_LABELS,
-  CATEGORY_LABELS,
-} from '../constants/theme';
+import styles from '../styles/index';
+import { COLORS, RADIUS, COLOR_SWATCHES, COLOR_LABELS, CATEGORY_LABELS } from '../constants/theme';
 import { updateClothingItem, deleteClothingItem } from '../api/wardrobeApi';
 import { useWardrobe } from '../context/WardrobeContext';
 
@@ -39,36 +32,25 @@ const COLOR_OPTIONS = [
 
 function ColorDot({ color, size = 16 }) {
   const swatch = COLOR_SWATCHES[color];
-
   if (color === 'multicolor') {
     return (
       <View style={[styles.colorDot, { width: size, height: size, borderRadius: size / 2 }]}>
-        <View style={[styles.dotHalf, { backgroundColor: '#e53935' }]} />
-        <View style={[styles.dotHalf, { backgroundColor: '#2196f3' }]} />
+        <View style={[styles.colorDotHalf, { backgroundColor: '#e53935' }]} />
+        <View style={[styles.colorDotHalf, { backgroundColor: '#2196f3' }]} />
       </View>
     );
   }
-
   if (color === 'pattern') {
     return (
-      <View style={[
-        styles.colorDot,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#ccc' }
-      ]}>
-        <Text style={{ fontSize: size * 0.6, lineHeight: size }}>≋</Text>
+      <View style={[styles.colorDot, { width: size, height: size, borderRadius: size / 2, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#ccc' }]}>
+        <Text style={{ fontSize: size * 0.6 }}>≋</Text>
       </View>
     );
   }
-
   return (
     <View style={[
       styles.colorDot,
-      {
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: swatch || '#ccc',
-      },
+      { width: size, height: size, borderRadius: size / 2, backgroundColor: swatch || '#ccc' },
       color === 'white' && { borderWidth: 1, borderColor: '#ddd' },
     ]} />
   );
@@ -80,18 +62,12 @@ function ColorPicker({ selected, onSelect }) {
       {COLOR_OPTIONS.map((color) => (
         <TouchableOpacity
           key={color}
-          style={[
-            styles.colorPickerItem,
-            selected === color && styles.colorPickerItemSelected,
-          ]}
+          style={[styles.colorPickerItem, selected === color && styles.colorPickerItemSelected]}
           onPress={() => onSelect(color)}
           activeOpacity={0.7}
         >
           <ColorDot color={color} size={22} />
-          <Text style={[
-            styles.colorPickerLabel,
-            selected === color && styles.colorPickerLabelSelected,
-          ]}>
+          <Text style={[styles.colorPickerLabel, selected === color && styles.colorPickerLabelSelected]}>
             {COLOR_LABELS[color]}
           </Text>
         </TouchableOpacity>
@@ -133,13 +109,7 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
       updateItem(updated);
       setEditMode(false);
     } catch (e) {
-      // Fallback: update locally if backend unreachable
-      updateItem({
-        ...item,
-        type: editType,
-        color: editColor,
-        description: editDescription,
-      });
+      updateItem({ ...item, type: editType, color: editColor, description: editDescription });
       setEditMode(false);
     } finally {
       setSaving(false);
@@ -164,19 +134,19 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
   return (
     <>
       <TouchableOpacity
-        style={[styles.card, { width: size, height: size }]}
+        style={[styles.itemCard, { width: size, height: size }]}
         onPress={openModal}
         activeOpacity={0.8}
       >
         {item.imageUrl ? (
-          <Image source={{ uri: item.imageUrl }} style={styles.image} resizeMode="contain" />
+          <Image source={{ uri: item.imageUrl }} style={styles.itemImage} resizeMode="contain" />
         ) : (
-          <View style={styles.placeholder}>
+          <View style={styles.itemPlaceholder}>
             <Ionicons name="shirt-outline" size={28} color={COLORS.gray200} />
           </View>
         )}
         {item.color && item.color !== 'unknown' && (
-          <View style={styles.colorDotWrap}>
+          <View style={styles.itemColorDotWrap}>
             <ColorDot color={item.color} size={12} />
           </View>
         )}
@@ -189,14 +159,11 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
         onRequestClose={closeModal}
       >
         <View style={styles.modalContainer}>
-          {/* Header */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={closeModal} hitSlop={8}>
               <Ionicons name="close" size={24} color={COLORS.black} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>
-              {editMode ? 'Edit item' : 'Item details'}
-            </Text>
+            <Text style={styles.modalTitle}>{editMode ? 'Edit item' : 'Item details'}</Text>
             {editMode ? (
               <TouchableOpacity onPress={() => setEditMode(false)} hitSlop={8}>
                 <Text style={styles.cancelText}>Cancel</Text>
@@ -208,20 +175,12 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
             )}
           </View>
 
-          <ScrollView
-            contentContainerStyle={styles.modalContent}
-            keyboardShouldPersistTaps="handled"
-          >
-            {/* Image */}
-            <View style={styles.modalImageWrap}>
+          <ScrollView contentContainerStyle={styles.modalContent} keyboardShouldPersistTaps="handled">
+            <View style={styles.itemModalImageWrap}>
               {item.imageUrl ? (
-                <Image
-                  source={{ uri: item.imageUrl }}
-                  style={styles.modalImage}
-                  resizeMode="contain"
-                />
+                <Image source={{ uri: item.imageUrl }} style={styles.itemModalImage} resizeMode="contain" />
               ) : (
-                <View style={styles.modalImagePlaceholder}>
+                <View style={styles.itemModalImagePlaceholder}>
                   <Ionicons name="shirt-outline" size={60} color={COLORS.gray200} />
                 </View>
               )}
@@ -229,9 +188,8 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
 
             {editMode ? (
               <>
-                {/* Type selector */}
                 <Text style={styles.sectionLabel}>Type</Text>
-                <View style={styles.chipRow}>
+                <View style={styles.tagsRow}>
                   {TYPES.map((t) => (
                     <TouchableOpacity
                       key={t.value}
@@ -246,16 +204,14 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                   ))}
                 </View>
 
-                {/* Color picker */}
                 <Text style={styles.sectionLabel}>Color</Text>
                 <ColorPicker selected={editColor} onSelect={setEditColor} />
 
-                {/* Description */}
                 <Text style={styles.sectionLabel}>
                   Description <Text style={styles.optional}>(optional)</Text>
                 </Text>
                 <TextInput
-                  style={styles.descInput}
+                  style={styles.textInput}
                   placeholder="e.g. favourite going out top..."
                   placeholderTextColor={COLORS.gray200}
                   value={editDescription}
@@ -264,9 +220,8 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                   maxLength={200}
                 />
 
-                {/* Save button */}
                 <TouchableOpacity
-                  style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+                  style={[styles.primaryBtn, saving && styles.primaryBtnDisabled]}
                   onPress={handleSaveEdit}
                   disabled={saving}
                 >
@@ -275,57 +230,44 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                   ) : (
                     <>
                       <Ionicons name="checkmark" size={18} color={COLORS.white} />
-                      <Text style={styles.saveBtnText}>Save changes</Text>
+                      <Text style={styles.primaryBtnText}>Save changes</Text>
                     </>
                   )}
                 </TouchableOpacity>
               </>
             ) : (
               <>
-                {/* View mode — tags row */}
                 <View style={styles.tagsRow}>
                   <View style={styles.typeBadge}>
-                    <Text style={styles.typeBadgeText}>
-                      {CATEGORY_LABELS[item.type] || item.type}
-                    </Text>
+                    <Text style={styles.typeBadgeText}>{CATEGORY_LABELS[item.type] || item.type}</Text>
                   </View>
                   <View style={styles.colorBadge}>
                     <ColorDot color={item.color} size={14} />
-                    <Text style={styles.colorBadgeText}>
-                      {COLOR_LABELS[item.color] || item.color}
-                    </Text>
+                    <Text style={styles.colorBadgeText}>{COLOR_LABELS[item.color] || item.color}</Text>
                   </View>
                 </View>
 
-                {/* Description */}
-                <View style={styles.descriptionBox}>
-                  <Text style={styles.descriptionLabel}>Description</Text>
+                <View style={styles.itemDescriptionBox}>
+                  <Text style={styles.itemDescriptionLabel}>Description</Text>
                   {item.description ? (
-                    <Text style={styles.descriptionText}>{item.description}</Text>
+                    <Text style={styles.itemDescriptionText}>{item.description}</Text>
                   ) : (
-                    <Text style={styles.descriptionEmpty}>No description added</Text>
+                    <Text style={styles.itemDescriptionEmpty}>No description added</Text>
                   )}
                 </View>
 
-                {/* Date added */}
-                <Text style={styles.dateText}>
+                <Text style={styles.itemDateText}>
                   Added {new Date(item.createdAt).toLocaleDateString('en-US', {
                     month: 'long', day: 'numeric', year: 'numeric',
                   })}
                 </Text>
 
-                {/* Edit button */}
-                <TouchableOpacity
-                  style={styles.editBtn}
-                  onPress={() => setEditMode(true)}
-                  activeOpacity={0.8}
-                >
+                <TouchableOpacity style={styles.outlineBtn} onPress={() => setEditMode(true)} activeOpacity={0.8}>
                   <Ionicons name="pencil-outline" size={16} color={COLORS.purple600} />
-                  <Text style={styles.editBtnText}>Edit item</Text>
+                  <Text style={styles.outlineBtnText}>Edit item</Text>
                 </TouchableOpacity>
               </>
             )}
-
             <View style={{ height: 32 }} />
           </ScrollView>
         </View>
@@ -333,111 +275,3 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: COLORS.gray50,
-    borderRadius: RADIUS.md,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 0.5,
-    borderColor: COLORS.gray100,
-  },
-  image: { width: '100%', height: '100%' },
-  placeholder: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-  colorDotWrap: { position: 'absolute', bottom: 5, right: 5 },
-  colorDot: { overflow: 'hidden', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  dotHalf: { flex: 1, height: '100%' },
-
-  modalContainer: { flex: 1, backgroundColor: COLORS.white },
-  modalHeader: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: SPACING.lg, paddingVertical: SPACING.md,
-    borderBottomWidth: 0.5, borderBottomColor: COLORS.gray100,
-  },
-  modalTitle: { fontSize: 16, fontWeight: '500', color: COLORS.black },
-  cancelText: { fontSize: 14, color: COLORS.purple600 },
-  modalContent: { padding: SPACING.lg, gap: SPACING.md },
-  modalImageWrap: {
-    width: '100%', height: 300,
-    backgroundColor: COLORS.gray50, borderRadius: RADIUS.lg,
-    overflow: 'hidden', alignItems: 'center', justifyContent: 'center',
-  },
-  modalImage: { width: '100%', height: '100%' },
-  modalImagePlaceholder: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-
-  tagsRow: { flexDirection: 'row', gap: SPACING.sm, flexWrap: 'wrap' },
-  typeBadge: {
-    backgroundColor: COLORS.purple50, borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md, paddingVertical: 6,
-  },
-  typeBadgeText: { fontSize: 13, color: COLORS.purple800, fontWeight: '500' },
-  colorBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: COLORS.gray50, borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md, paddingVertical: 6,
-    borderWidth: 0.5, borderColor: COLORS.gray100,
-  },
-  colorBadgeText: { fontSize: 13, color: COLORS.gray600, fontWeight: '500' },
-
-  descriptionBox: {
-    backgroundColor: COLORS.gray50, borderRadius: RADIUS.md,
-    padding: SPACING.md, gap: SPACING.xs,
-  },
-  descriptionLabel: {
-    fontSize: 11, fontWeight: '500', color: COLORS.gray400,
-    textTransform: 'uppercase', letterSpacing: 0.5,
-  },
-  descriptionText: { fontSize: 15, color: COLORS.black, lineHeight: 22 },
-  descriptionEmpty: { fontSize: 14, color: COLORS.gray200, fontStyle: 'italic' },
-  dateText: { fontSize: 12, color: COLORS.gray400, textAlign: 'center' },
-
-  editBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: SPACING.xs, borderWidth: 0.5, borderColor: COLORS.purple400,
-    borderRadius: RADIUS.lg, paddingVertical: 12,
-  },
-  editBtnText: { fontSize: 14, color: COLORS.purple600, fontWeight: '500' },
-
-  // Edit mode
-  sectionLabel: { fontSize: 13, fontWeight: '500', color: COLORS.gray600 },
-  optional: { fontWeight: '400', color: COLORS.gray400 },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  chip: {
-    paddingHorizontal: SPACING.md, paddingVertical: 8,
-    borderRadius: RADIUS.full, backgroundColor: COLORS.gray50,
-    borderWidth: 0.5, borderColor: COLORS.gray100,
-  },
-  chipActive: { backgroundColor: COLORS.purple50, borderColor: COLORS.purple400 },
-  chipText: { fontSize: 13, color: COLORS.gray600 },
-  chipTextActive: { color: COLORS.purple800, fontWeight: '500' },
-
-  colorPickerWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  colorPickerItem: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: SPACING.sm, paddingVertical: 6,
-    borderRadius: RADIUS.full, backgroundColor: COLORS.gray50,
-    borderWidth: 0.5, borderColor: COLORS.gray100,
-  },
-  colorPickerItemSelected: {
-    backgroundColor: COLORS.purple50, borderColor: COLORS.purple400,
-  },
-  colorPickerLabel: { fontSize: 12, color: COLORS.gray600 },
-  colorPickerLabelSelected: { color: COLORS.purple800, fontWeight: '500' },
-
-  descInput: {
-    borderWidth: 0.5, borderColor: COLORS.gray100,
-    borderRadius: RADIUS.md, padding: SPACING.md,
-    fontSize: 14, color: COLORS.black,
-    minHeight: 80, textAlignVertical: 'top',
-    backgroundColor: COLORS.gray50,
-  },
-  saveBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: SPACING.sm, backgroundColor: COLORS.purple600,
-    borderRadius: RADIUS.lg, paddingVertical: 14,
-  },
-  saveBtnDisabled: { backgroundColor: COLORS.gray100 },
-  saveBtnText: { color: COLORS.white, fontSize: 15, fontWeight: '500' },
-});

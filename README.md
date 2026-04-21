@@ -258,4 +258,4 @@ Pattern      +  pattern                       →  avoided
 - Style tags (casual, formal, smart-casual)
 - Most worn items statistics
 - Swipe to replace a single item in a generated outfit
-- Push notifications for daily outfit suggestions
+- Push notifications for daily outfit suggestion
