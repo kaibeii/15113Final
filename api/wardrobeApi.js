@@ -9,12 +9,9 @@ const api = axios.create({
 
 /**
  * Upload a clothing photo.
- * @param {string} imageUri   - Local URI from camera/library
- * @param {string} type       - 'top' | 'bottom' | 'shoes' | 'hat' | 'other'
- * @param {string} description - Optional description
- * @returns {Promise<ClothingItem>}
+ * Returns { item, suggestedColor } so the frontend can show the auto-detected color.
  */
-export async function uploadClothingItem(imageUri, type, description = '') {
+export async function uploadClothingItem(imageUri, type, color, description = '') {
   const form = new FormData();
   const filename = imageUri.split('/').pop();
   const ext = filename.split('.').pop().toLowerCase();
@@ -22,12 +19,13 @@ export async function uploadClothingItem(imageUri, type, description = '') {
 
   form.append('image', { uri: imageUri, name: filename, type: mime });
   form.append('type', type);
+  form.append('color', color);
   form.append('description', description);
 
   const { data } = await api.post('/upload', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
-  return data.item;
+  return data; // { item, suggestedColor }
 }
 
 /**
@@ -43,6 +41,14 @@ export async function fetchWardrobeItems() {
  */
 export async function deleteClothingItem(id) {
   await api.delete(`/items/${id}`);
+}
+
+/**
+ * Update type, color, and description of an existing item.
+ */
+export async function updateClothingItem(id, { type, color, description }) {
+  const { data } = await api.patch(`/items/${id}`, { type, color, description });
+  return data.item;
 }
 
 /**

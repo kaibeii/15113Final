@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWardrobe } from '../context/WardrobeContext';
 import { uploadClothingItem } from '../api/wardrobeApi';
-import { COLORS, RADIUS, SPACING } from '../constants/theme';
+import { COLORS, RADIUS, SPACING, COLOR_SWATCHES, COLOR_LABELS } from '../constants/theme';
 
 const TYPES = [
   { value: 'top',    label: 'Top',    icon: 'shirt-outline' },
@@ -26,10 +26,43 @@ const TYPES = [
   { value: 'other',  label: 'Other',  icon: 'ellipsis-horizontal-outline' },
 ];
 
+const COLOR_OPTIONS = [
+  'black', 'white', 'grey', 'navy', 'blue', 'red',
+  'green', 'yellow', 'orange', 'pink', 'purple',
+  'brown', 'beige', 'multicolor', 'pattern',
+];
+
+function ColorDot({ color, size = 18 }) {
+  const swatch = COLOR_SWATCHES[color];
+  if (color === 'multicolor') {
+    return (
+      <View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', flexDirection: 'row' }}>
+        <View style={{ flex: 1, backgroundColor: '#e53935' }} />
+        <View style={{ flex: 1, backgroundColor: '#2196f3' }} />
+      </View>
+    );
+  }
+  if (color === 'pattern') {
+    return (
+      <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#ccc', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: size * 0.55 }}>≋</Text>
+      </View>
+    );
+  }
+  return (
+    <View style={[
+      { width: size, height: size, borderRadius: size / 2, backgroundColor: swatch || '#ccc' },
+      color === 'white' && { borderWidth: 1, borderColor: '#ddd' },
+    ]} />
+  );
+}
+
 export default function CameraScreen({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedUri, setCapturedUri] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [suggestedColor, setSuggestedColor] = useState(null);
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
   const [facing, setFacing] = useState('back');
@@ -60,6 +93,8 @@ export default function CameraScreen({ navigation }) {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
       setCapturedUri(photo.uri);
       setSelectedType(null);
+      setSelectedColor(null);
+      setSuggestedColor(null);
       setDescription('');
     } catch (e) {
       console.warn('Camera error:', e);
@@ -76,6 +111,8 @@ export default function CameraScreen({ navigation }) {
     if (!result.canceled && result.assets[0]) {
       setCapturedUri(result.assets[0].uri);
       setSelectedType(null);
+      setSelectedColor(null);
+      setSuggestedColor(null);
       setDescription('');
     }
   };
@@ -83,6 +120,8 @@ export default function CameraScreen({ navigation }) {
   const retake = () => {
     setCapturedUri(null);
     setSelectedType(null);
+    setSelectedColor(null);
+    setSuggestedColor(null);
     setDescription('');
     setCameraKey((k) => k + 1);
   };
@@ -94,17 +133,26 @@ export default function CameraScreen({ navigation }) {
     }
     setUploading(true);
     try {
-      const item = await uploadClothingItem(capturedUri, selectedType, description);
+      const colorToSend = selectedColor || 'unknown';
+      const { item, suggestedColor: detected } = await uploadClothingItem(
+        capturedUri,
+        selectedType,
+        colorToSend,
+        description
+      );
+      // If user hadn't picked a color, update with the detected one
+      if (!selectedColor && detected) {
+        item.color = detected;
+      }
       addItem(item);
       retake();
       navigation.navigate('Wardrobe');
     } catch (e) {
-      // Dev fallback — save locally without backend
       const mockItem = {
         _id: Date.now().toString(),
         imageUrl: capturedUri,
         type: selectedType,
-        color: 'unknown',
+        color: selectedColor || 'unknown',
         description,
         createdAt: new Date().toISOString(),
       };
@@ -135,28 +183,13 @@ export default function CameraScreen({ navigation }) {
         >
           <Image source={{ uri: capturedUri }} style={styles.preview} resizeMode="contain" />
 
-          {/* AI color info banner */}
-          <View style={styles.aiBanner}>
-            <Ionicons name="color-palette-outline" size={14} color={COLORS.purple600} />
-            <Text style={styles.aiBannerText}>
-              Color tag will be detected automatically when saved
-            </Text>
-          </View>
-
           {/* Type selector */}
           <Text style={styles.sectionLabel}>Type</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.typeRow}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeRow}>
             {TYPES.map((t) => (
               <TouchableOpacity
                 key={t.value}
-                style={[
-                  styles.typeChip,
-                  selectedType === t.value && styles.typeChipActive,
-                ]}
+                style={[styles.typeChip, selectedType === t.value && styles.typeChipActive]}
                 onPress={() => setSelectedType(t.value)}
                 activeOpacity={0.7}
               >
@@ -165,19 +198,47 @@ export default function CameraScreen({ navigation }) {
                   size={16}
                   color={selectedType === t.value ? COLORS.purple800 : COLORS.gray400}
                 />
-                <Text
-                  style={[
-                    styles.typeChipText,
-                    selectedType === t.value && styles.typeChipTextActive,
-                  ]}
-                >
+                <Text style={[styles.typeChipText, selectedType === t.value && styles.typeChipTextActive]}>
                   {t.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
 
-          {/* Description input */}
+          {/* Color selector */}
+          <View style={styles.colorHeader}>
+            <Text style={styles.sectionLabel}>Color</Text>
+            <Text style={styles.colorHint}>
+              {selectedColor
+                ? `Selected: ${COLOR_LABELS[selectedColor]}`
+                : 'Auto-detected after saving — or pick manually'}
+            </Text>
+          </View>
+          <View style={styles.colorGrid}>
+            {COLOR_OPTIONS.map((color) => (
+              <TouchableOpacity
+                key={color}
+                style={[
+                  styles.colorOption,
+                  selectedColor === color && styles.colorOptionSelected,
+                ]}
+                onPress={() => setSelectedColor(
+                  selectedColor === color ? null : color
+                )}
+                activeOpacity={0.7}
+              >
+                <ColorDot color={color} size={20} />
+                <Text style={[
+                  styles.colorOptionLabel,
+                  selectedColor === color && styles.colorOptionLabelSelected,
+                ]}>
+                  {COLOR_LABELS[color]}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Description */}
           <Text style={styles.sectionLabel}>
             Description <Text style={styles.optional}>(optional)</Text>
           </Text>
@@ -219,18 +280,10 @@ export default function CameraScreen({ navigation }) {
   // --- Camera viewfinder ---
   return (
     <View style={styles.cameraContainer}>
-      <CameraView
-        key={cameraKey}
-        ref={cameraRef}
-        style={styles.camera}
-        facing={facing}
-      >
+      <CameraView key={cameraKey} ref={cameraRef} style={styles.camera} facing={facing}>
         <SafeAreaView edges={['top']}>
           <View style={styles.camTopBar}>
-            <TouchableOpacity
-              style={styles.camIconBtn}
-              onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))}
-            >
+            <TouchableOpacity style={styles.camIconBtn} onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))}>
               <Ionicons name="camera-reverse-outline" size={26} color={COLORS.white} />
             </TouchableOpacity>
             <View style={styles.camHintPill}>
@@ -261,95 +314,47 @@ export default function CameraScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.white },
-  center: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    padding: SPACING.xl, gap: SPACING.md, backgroundColor: COLORS.white,
-  },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl, gap: SPACING.md, backgroundColor: COLORS.white },
   cameraContainer: { flex: 1 },
   camera: { flex: 1 },
-
-  camTopBar: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm,
-  },
+  camTopBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm },
   camIconBtn: { padding: SPACING.sm },
-  camHintPill: {
-    backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md, paddingVertical: 5,
-  },
+  camHintPill: { backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: RADIUS.full, paddingHorizontal: SPACING.md, paddingVertical: 5 },
   camHintText: { color: COLORS.white, fontSize: 12 },
-
   viewfinder: { position: 'absolute', top: '25%', left: '12%', right: '12%', bottom: '25%' },
   corner: { position: 'absolute', width: 22, height: 22 },
   tl: { top: 0, left: 0, borderTopWidth: 2.5, borderLeftWidth: 2.5, borderColor: COLORS.purple200, borderTopLeftRadius: 4 },
   tr: { top: 0, right: 0, borderTopWidth: 2.5, borderRightWidth: 2.5, borderColor: COLORS.purple200, borderTopRightRadius: 4 },
   bl: { bottom: 0, left: 0, borderBottomWidth: 2.5, borderLeftWidth: 2.5, borderColor: COLORS.purple200, borderBottomLeftRadius: 4 },
   br: { bottom: 0, right: 0, borderBottomWidth: 2.5, borderRightWidth: 2.5, borderColor: COLORS.purple200, borderBottomRightRadius: 4 },
-
-  shutterArea: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
-    alignItems: 'center', paddingBottom: SPACING.xl + 8,
-  },
-  shutter: {
-    width: 68, height: 68, borderRadius: 34,
-    borderWidth: 3, borderColor: 'rgba(255,255,255,0.8)',
-    alignItems: 'center', justifyContent: 'center',
-  },
+  shutterArea: { position: 'absolute', bottom: 0, left: 0, right: 0, alignItems: 'center', paddingBottom: SPACING.xl + 8 },
+  shutter: { width: 68, height: 68, borderRadius: 34, borderWidth: 3, borderColor: 'rgba(255,255,255,0.8)', alignItems: 'center', justifyContent: 'center' },
   shutterInner: { width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.white },
-
   permTitle: { fontSize: 18, fontWeight: '500', color: COLORS.black, textAlign: 'center' },
   permSub: { fontSize: 14, color: COLORS.gray400, textAlign: 'center', lineHeight: 22 },
   permBtn: { backgroundColor: COLORS.purple600, borderRadius: RADIUS.lg, paddingHorizontal: SPACING.xl, paddingVertical: SPACING.md },
   permBtnText: { color: COLORS.white, fontSize: 15, fontWeight: '500' },
-
-  previewHeader: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm,
-    borderBottomWidth: 0.5, borderBottomColor: COLORS.gray100,
-  },
+  previewHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderBottomWidth: 0.5, borderBottomColor: COLORS.gray100 },
   previewTitle: { fontSize: 16, fontWeight: '500', color: COLORS.black },
   previewScroll: { flex: 1 },
   previewScrollContent: { padding: SPACING.lg, gap: SPACING.md },
-
-  preview: {
-    width: '100%', height: 260,
-    backgroundColor: COLORS.gray50,
-    borderRadius: RADIUS.lg,
-  },
-
-  aiBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: SPACING.xs,
-    backgroundColor: COLORS.purple50, borderRadius: RADIUS.md, padding: SPACING.sm,
-  },
-  aiBannerText: { fontSize: 13, color: COLORS.purple800, flex: 1 },
-
+  preview: { width: '100%', height: 240, backgroundColor: COLORS.gray50, borderRadius: RADIUS.lg },
   sectionLabel: { fontSize: 13, fontWeight: '500', color: COLORS.gray600 },
   optional: { fontWeight: '400', color: COLORS.gray400 },
-
   typeRow: { flexDirection: 'row', gap: SPACING.sm },
-  typeChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    paddingHorizontal: SPACING.md, paddingVertical: 8,
-    borderRadius: RADIUS.full, backgroundColor: COLORS.gray50,
-    borderWidth: 0.5, borderColor: COLORS.gray100,
-  },
+  typeChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: SPACING.md, paddingVertical: 8, borderRadius: RADIUS.full, backgroundColor: COLORS.gray50, borderWidth: 0.5, borderColor: COLORS.gray100 },
   typeChipActive: { backgroundColor: COLORS.purple50, borderColor: COLORS.purple400 },
   typeChipText: { fontSize: 13, color: COLORS.gray600 },
   typeChipTextActive: { color: COLORS.purple800, fontWeight: '500' },
-
-  descInput: {
-    borderWidth: 0.5, borderColor: COLORS.gray100,
-    borderRadius: RADIUS.md, padding: SPACING.md,
-    fontSize: 14, color: COLORS.black,
-    minHeight: 80, textAlignVertical: 'top',
-    backgroundColor: COLORS.gray50,
-  },
-
-  saveBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: SPACING.sm, backgroundColor: COLORS.purple600,
-    borderRadius: RADIUS.lg, paddingVertical: 14,
-  },
+  colorHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  colorHint: { fontSize: 11, color: COLORS.gray400, flex: 1, textAlign: 'right' },
+  colorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
+  colorOption: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SPACING.sm, paddingVertical: 6, borderRadius: RADIUS.full, backgroundColor: COLORS.gray50, borderWidth: 0.5, borderColor: COLORS.gray100 },
+  colorOptionSelected: { backgroundColor: COLORS.purple50, borderColor: COLORS.purple400 },
+  colorOptionLabel: { fontSize: 12, color: COLORS.gray600 },
+  colorOptionLabelSelected: { color: COLORS.purple800, fontWeight: '500' },
+  descInput: { borderWidth: 0.5, borderColor: COLORS.gray100, borderRadius: RADIUS.md, padding: SPACING.md, fontSize: 14, color: COLORS.black, minHeight: 80, textAlignVertical: 'top', backgroundColor: COLORS.gray50 },
+  saveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.sm, backgroundColor: COLORS.purple600, borderRadius: RADIUS.lg, paddingVertical: 14 },
   saveBtnDisabled: { backgroundColor: COLORS.gray100 },
   saveBtnText: { color: COLORS.white, fontSize: 15, fontWeight: '500' },
 });

@@ -16,6 +16,12 @@ export function WardrobeProvider({ children }) {
     setItems((prev) => prev.filter((item) => item._id !== id));
   }, []);
 
+  const updateItem = useCallback((updatedItem) => {
+    setItems((prev) =>
+      prev.map((item) => (item._id === updatedItem._id ? updatedItem : item))
+    );
+  }, []);
+
   const saveOutfit = useCallback((outfit) => {
     const saved = {
       ...outfit,
@@ -49,6 +55,7 @@ export function WardrobeProvider({ children }) {
         setError,
         addItem,
         removeItem,
+        updateItem,
         saveOutfit,
         removeSavedOutfit,
         getItemsByType,
