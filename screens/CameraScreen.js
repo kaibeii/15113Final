@@ -8,6 +8,8 @@ import {
   Image,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWardrobe } from '../context/WardrobeContext';
 import { uploadClothingItem } from '../api/wardrobeApi';
 import styles from '../styles/index';
-import { COLORS, RADIUS, COLOR_SWATCHES, COLOR_LABELS } from '../constants/theme';
+import { COLORS, COLOR_SWATCHES, COLOR_LABELS } from '../constants/theme';
 
 const TYPES = [
   { value: 'top',    label: 'Top',    icon: 'shirt-outline' },
@@ -151,105 +153,127 @@ export default function CameraScreen({ navigation }) {
     }
   };
 
+  // --- Preview + confirm screen ---
   if (capturedUri) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.previewHeader}>
-          <TouchableOpacity onPress={retake} hitSlop={8}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.black} />
-          </TouchableOpacity>
-          <Text style={styles.previewTitle}>Add item</Text>
-          <View style={{ width: 24 }} />
-        </View>
-
-        <ScrollView
-          style={styles.previewScroll}
-          contentContainerStyle={styles.previewScrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Image source={{ uri: capturedUri }} style={styles.previewImage} resizeMode="contain" />
-
-          <Text style={styles.sectionLabel}>Type</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeRow}>
-            {TYPES.map((t) => (
-              <TouchableOpacity
-                key={t.value}
-                style={[styles.typeChip, selectedType === t.value && styles.typeChipActive]}
-                onPress={() => setSelectedType(t.value)}
-                activeOpacity={0.7}
-              >
-                <Ionicons name={t.icon} size={16} color={selectedType === t.value ? COLORS.purple800 : COLORS.gray400} />
-                <Text style={[styles.typeChipText, selectedType === t.value && styles.typeChipTextActive]}>
-                  {t.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          <View style={styles.colorHeader}>
-            <Text style={styles.sectionLabel}>Color</Text>
-            <Text style={styles.colorHint}>
-              {selectedColor ? `Selected: ${COLOR_LABELS[selectedColor]}` : 'Auto-detected after saving — or pick manually'}
-            </Text>
-          </View>
-          <View style={styles.colorGrid}>
-            {COLOR_OPTIONS.map((color) => (
-              <TouchableOpacity
-                key={color}
-                style={[styles.colorOption, selectedColor === color && styles.colorOptionSelected]}
-                onPress={() => setSelectedColor(selectedColor === color ? null : color)}
-                activeOpacity={0.7}
-              >
-                <ColorDot color={color} size={20} />
-                <Text style={[styles.colorOptionLabel, selectedColor === color && styles.colorOptionLabelSelected]}>
-                  {COLOR_LABELS[color]}
-                </Text>
-              </TouchableOpacity>
-            ))}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.previewHeader}>
+            <TouchableOpacity onPress={retake} hitSlop={8}>
+              <Ionicons name="arrow-back" size={24} color={COLORS.black} />
+            </TouchableOpacity>
+            <Text style={styles.previewTitle}>Add item</Text>
+            <View style={{ width: 24 }} />
           </View>
 
-          <Text style={styles.sectionLabel}>
-            Description <Text style={styles.optional}>(optional)</Text>
-          </Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="e.g. favourite going out top..."
-            placeholderTextColor={COLORS.gray200}
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            maxLength={200}
-          />
-
-          <TouchableOpacity
-            style={[styles.primaryBtn, (!selectedType || uploading) && styles.primaryBtnDisabled]}
-            onPress={confirmAndUpload}
-            disabled={!selectedType || uploading}
+          <ScrollView
+            style={styles.previewScroll}
+            contentContainerStyle={styles.previewScrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            {uploading ? (
-              <>
-                <ActivityIndicator color={COLORS.white} />
-                <Text style={styles.primaryBtnText}>Processing image...</Text>
-              </>
-            ) : (
-              <>
-                <Ionicons name="checkmark" size={18} color={COLORS.white} />
-                <Text style={styles.primaryBtnText}>Save to wardrobe</Text>
-              </>
-            )}
-          </TouchableOpacity>
-          <View style={{ height: 32 }} />
-        </ScrollView>
-      </SafeAreaView>
+            <Image source={{ uri: capturedUri }} style={styles.previewImage} resizeMode="contain" />
+
+            <Text style={styles.sectionLabel}>Type</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.typeRow}
+            >
+              {TYPES.map((t) => (
+                <TouchableOpacity
+                  key={t.value}
+                  style={[styles.typeChip, selectedType === t.value && styles.typeChipActive]}
+                  onPress={() => setSelectedType(t.value)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={t.icon}
+                    size={16}
+                    color={selectedType === t.value ? COLORS.purple800 : COLORS.gray400}
+                  />
+                  <Text style={[styles.typeChipText, selectedType === t.value && styles.typeChipTextActive]}>
+                    {t.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <View style={styles.colorHeader}>
+              <Text style={styles.sectionLabel}>Color</Text>
+              <Text style={styles.colorHint}>
+                {selectedColor
+                  ? `Selected: ${COLOR_LABELS[selectedColor]}`
+                  : 'Auto-detected after saving — or pick manually'}
+              </Text>
+            </View>
+            <View style={styles.colorGrid}>
+              {COLOR_OPTIONS.map((color) => (
+                <TouchableOpacity
+                  key={color}
+                  style={[styles.colorOption, selectedColor === color && styles.colorOptionSelected]}
+                  onPress={() => setSelectedColor(selectedColor === color ? null : color)}
+                  activeOpacity={0.7}
+                >
+                  <ColorDot color={color} size={20} />
+                  <Text style={[styles.colorOptionLabel, selectedColor === color && styles.colorOptionLabelSelected]}>
+                    {COLOR_LABELS[color]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.sectionLabel}>
+              Description <Text style={styles.optional}>(optional)</Text>
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="e.g. favourite going out top..."
+              placeholderTextColor={COLORS.gray200}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              maxLength={200}
+            />
+
+            <TouchableOpacity
+              style={[styles.primaryBtn, (!selectedType || uploading) && styles.primaryBtnDisabled]}
+              onPress={confirmAndUpload}
+              disabled={!selectedType || uploading}
+            >
+              {uploading ? (
+                <>
+                  <ActivityIndicator color={COLORS.white} />
+                  <Text style={styles.primaryBtnText}>Processing image...</Text>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="checkmark" size={18} color={COLORS.white} />
+                  <Text style={styles.primaryBtnText}>Save to wardrobe</Text>
+                </>
+              )}
+            </TouchableOpacity>
+            <View style={{ height: 32 }} />
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 
+  // --- Camera viewfinder ---
   return (
     <View style={styles.cameraContainer}>
       <CameraView key={cameraKey} ref={cameraRef} style={styles.camera} facing={facing}>
         <SafeAreaView edges={['top']}>
           <View style={styles.camTopBar}>
-            <TouchableOpacity style={styles.camIconBtn} onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))}>
+            <TouchableOpacity
+              style={styles.camIconBtn}
+              onPress={() => setFacing((f) => (f === 'back' ? 'front' : 'back'))}
+            >
               <Ionicons name="camera-reverse-outline" size={26} color={COLORS.white} />
             </TouchableOpacity>
             <View style={styles.camHintPill}>

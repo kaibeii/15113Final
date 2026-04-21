@@ -53,6 +53,17 @@ export default function OutfitsScreen({ navigation }) {
 
   const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+  // Refresh outfit items with latest data from context whenever items change
+  const getRefreshedOutfit = (outfit) => {
+    if (!outfit) return null;
+    return {
+      ...outfit,
+      top: outfit.top ? items.find((i) => i._id === outfit.top._id) || outfit.top : null,
+      bottom: outfit.bottom ? items.find((i) => i._id === outfit.bottom._id) || outfit.bottom : null,
+      shoes: outfit.shoes ? items.find((i) => i._id === outfit.shoes._id) || outfit.shoes : null,
+    };
+  };
+
   const handleGenerate = async () => {
     if (!hasEnoughItems()) {
       Alert.alert(
@@ -124,9 +135,9 @@ export default function OutfitsScreen({ navigation }) {
                 <>
                   <Text style={styles.outfitGeneratedTitle}>Today's outfit</Text>
                   <View style={styles.outfitSlots}>
-                    <OutfitSlot item={currentOutfit.top}    label="Top" />
-                    <OutfitSlot item={currentOutfit.bottom} label="Bottom" />
-                    <OutfitSlot item={currentOutfit.shoes}  label="Shoes" />
+                    <OutfitSlot item={getRefreshedOutfit(currentOutfit).top}    label="Top" />
+                    <OutfitSlot item={getRefreshedOutfit(currentOutfit).bottom} label="Bottom" />
+                    <OutfitSlot item={getRefreshedOutfit(currentOutfit).shoes}  label="Shoes" />
                   </View>
                   <View style={styles.outfitActions}>
                     <TouchableOpacity
@@ -185,7 +196,7 @@ export default function OutfitsScreen({ navigation }) {
               </View>
             ) : (
               savedOutfits.map((outfit) => (
-                <OutfitCard key={outfit.id} outfit={outfit} onDelete={removeSavedOutfit} />
+                <OutfitCard key={outfit.id} outfit={getRefreshedOutfit(outfit)} onDelete={removeSavedOutfit} />
               ))
             )}
           </>

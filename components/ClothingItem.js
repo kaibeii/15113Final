@@ -9,6 +9,8 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../styles/index';
@@ -85,6 +87,15 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
   const [saving, setSaving] = useState(false);
   const { updateItem } = useWardrobe();
 
+  // Update local state when item changes (e.g., after successful save)
+  React.useEffect(() => {
+    if (!editMode) {
+      setEditType(item.type);
+      setEditColor(item.color);
+      setEditDescription(item.description || '');
+    }
+  }, [item, editMode]);
+
   const openModal = () => {
     setEditType(item.type);
     setEditColor(item.color);
@@ -106,10 +117,17 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
         color: editColor,
         description: editDescription,
       });
-      updateItem(updated);
+      // If backend didn't return description, add it from local state
+      const itemWithDescription = {
+        ...updated,
+        description: updated.description || editDescription,
+      };
+      updateItem(itemWithDescription);
       setEditMode(false);
     } catch (e) {
-      updateItem({ ...item, type: editType, color: editColor, description: editDescription });
+      // Still update locally even if backend fails
+      const localUpdate = { ...item, type: editType, color: editColor, description: editDescription };
+      updateItem(localUpdate);
       setEditMode(false);
     } finally {
       setSaving(false);
@@ -158,7 +176,11 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
         presentationStyle="pageSheet"
         onRequestClose={closeModal}
       >
-        <View style={styles.modalContainer}>
+        <KeyboardAvoidingView
+          style={styles.modalContainer}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+        >
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={closeModal} hitSlop={8}>
               <Ionicons name="close" size={24} color={COLORS.black} />
@@ -175,7 +197,11 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
             )}
           </View>
 
-          <ScrollView contentContainerStyle={styles.modalContent} keyboardShouldPersistTaps="handled">
+          <ScrollView
+            contentContainerStyle={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.itemModalImageWrap}>
               {item.imageUrl ? (
                 <Image source={{ uri: item.imageUrl }} style={styles.itemModalImage} resizeMode="contain" />
@@ -262,7 +288,11 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                   })}
                 </Text>
 
-                <TouchableOpacity style={styles.outlineBtn} onPress={() => setEditMode(true)} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={styles.outlineBtn}
+                  onPress={() => setEditMode(true)}
+                  activeOpacity={0.8}
+                >
                   <Ionicons name="pencil-outline" size={16} color={COLORS.purple600} />
                   <Text style={styles.outlineBtnText}>Edit item</Text>
                 </TouchableOpacity>
@@ -270,7 +300,7 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
             )}
             <View style={{ height: 32 }} />
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );
