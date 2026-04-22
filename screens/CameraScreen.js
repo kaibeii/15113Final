@@ -22,12 +22,12 @@ import styles from '../styles/index';
 import { COLORS, COLOR_SWATCHES, COLOR_LABELS } from '../constants/theme';
 
 const TYPES = [
-  { value: 'top',    label: 'Top',    icon: 'shirt-outline' },
-   { value: 'sweater', label: 'Sweater',   icon: 'layers-outline' },
-  { value: 'bottom', label: 'Bottom', icon: 'reorder-three-outline' },
-  { value: 'shoes',  label: 'Shoes',  icon: 'footsteps-outline' },
-  { value: 'hat',    label: 'Hat',    icon: 'umbrella-outline' },
-  { value: 'other',  label: 'Other',  icon: 'ellipsis-horizontal-outline' },
+  { value: 'top',     label: 'Top',     icon: 'shirt-outline' },
+  { value: 'sweater', label: 'Sweater', icon: 'layers-outline' },
+  { value: 'bottom',  label: 'Bottom',  icon: 'reorder-three-outline' },
+  { value: 'shoes',   label: 'Shoes',   icon: 'footsteps-outline' },
+  { value: 'hat',     label: 'Hat',     icon: 'umbrella-outline' },
+  { value: 'other',   label: 'Other',   icon: 'ellipsis-horizontal-outline' },
 ];
 
 const COLOR_OPTIONS = [
@@ -71,19 +71,18 @@ export default function CameraScreen({ navigation }) {
   const [facing, setFacing] = useState('back');
   const [cameraKey, setCameraKey] = useState(0);
   const cameraRef = useRef(null);
+  const scrollRef = useRef(null);
+  const descriptionRef = useRef(null);
   const { addItem } = useWardrobe();
 
-  // Reset camera state when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      // Reset all camera-related state when navigating back
       setCapturedUri(null);
       setSelectedType(null);
       setSelectedColor(null);
       setDescription('');
       setUploading(false);
       setFacing('back');
-      // Force camera remount by incrementing key
       setCameraKey((k) => k + 1);
     }, [])
   );
@@ -105,19 +104,16 @@ export default function CameraScreen({ navigation }) {
 
   const takePicture = async () => {
     if (!cameraRef.current) {
-      console.error('Camera ref not available');
       Alert.alert('Camera error', 'Camera is not ready. Please wait a moment and try again.');
       return;
     }
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
-      console.log('Photo captured:', photo.uri);
       setCapturedUri(photo.uri);
       setSelectedType(null);
       setSelectedColor(null);
       setDescription('');
     } catch (e) {
-      console.error('takePicture error:', e);
       Alert.alert('Camera error', 'Could not take photo. Please try again.');
       setCapturedUri(null);
     }
@@ -152,17 +148,14 @@ export default function CameraScreen({ navigation }) {
     setUploading(true);
     try {
       const colorToSend = selectedColor || 'unknown';
-      console.log('Uploading item...');
       const { item, suggestedColor: detected } = await uploadClothingItem(
         capturedUri, selectedType, colorToSend, description
       );
       if (!selectedColor && detected) item.color = detected;
       addItem(item);
-      console.log('Item added, resetting camera...');
       retake();
       navigation.navigate('Wardrobe');
     } catch (e) {
-      console.error('Upload error:', e);
       const mockItem = {
         _id: Date.now().toString(),
         imageUrl: capturedUri,
@@ -172,7 +165,6 @@ export default function CameraScreen({ navigation }) {
         createdAt: new Date().toISOString(),
       };
       addItem(mockItem);
-      console.log('Fallback item added, resetting camera...');
       retake();
       navigation.navigate('Wardrobe');
     } finally {
@@ -186,7 +178,7 @@ export default function CameraScreen({ navigation }) {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+        keyboardVerticalOffset={20}
       >
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.previewHeader}>
@@ -198,6 +190,7 @@ export default function CameraScreen({ navigation }) {
           </View>
 
           <ScrollView
+            ref={scrollRef}
             style={styles.previewScroll}
             contentContainerStyle={styles.previewScrollContent}
             keyboardShouldPersistTaps="handled"
@@ -258,6 +251,7 @@ export default function CameraScreen({ navigation }) {
               Description <Text style={styles.optional}>(optional)</Text>
             </Text>
             <TextInput
+              ref={descriptionRef}
               style={styles.textInput}
               placeholder="e.g. favourite going out top..."
               placeholderTextColor={COLORS.gray200}
@@ -265,6 +259,11 @@ export default function CameraScreen({ navigation }) {
               onChangeText={setDescription}
               multiline
               maxLength={200}
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollToEnd({ animated: true });
+                }, 300);
+              }}
             />
 
             <TouchableOpacity
@@ -295,7 +294,7 @@ export default function CameraScreen({ navigation }) {
   return (
     <View style={styles.cameraContainer}>
       <CameraView key={cameraKey} ref={cameraRef} style={styles.camera} facing={facing} />
-      
+
       <SafeAreaView edges={['top']} style={styles.camTopBarContainer}>
         <View style={styles.camTopBar}>
           <TouchableOpacity

@@ -23,30 +23,33 @@ function CustomTabBar({ state, descriptors, navigation }) {
         const isFocused = state.index === index;
         const isCamera = route.name === 'Camera';
 
-        const onPress = () => {
-          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-          if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
-        };
-
-        if (isCamera) {
-          return (
-            <TouchableOpacity
-              key={route.key}
-              onPress={onPress}
-              style={styles.plusWrap}
-              activeOpacity={0.85}
-            >
-              <View style={[styles.plusBtn, isFocused && styles.plusBtnActive]}>
-                <Ionicons
-                  name={isFocused ? 'close' : 'add'}
-                  size={28}
-                  color={COLORS.white}
-                />
-              </View>
-            </TouchableOpacity>
-          );
+      const onPress = () => {
+        if (isCamera && isFocused) {
+          navigation.navigate('Wardrobe');
+          return;
         }
+        const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+        if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
+      };
 
+      if (isCamera) {
+        return (
+          <TouchableOpacity
+            key={route.key}
+            onPress={onPress}
+            style={styles.plusWrap}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.plusBtn, isFocused && styles.plusBtnActive]}>
+              <Ionicons
+                name={isFocused ? 'close' : 'add'}
+                size={28}
+                color={COLORS.white}
+              />
+            </View>
+          </TouchableOpacity>
+        );
+      }   
         const iconName = route.name === 'Wardrobe'
           ? isFocused ? 'grid' : 'grid-outline'
           : isFocused ? 'shirt' : 'shirt-outline';

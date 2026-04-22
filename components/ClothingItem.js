@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Image,
@@ -14,17 +14,17 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../styles/index';
-import { COLORS, RADIUS, COLOR_SWATCHES, COLOR_LABELS, CATEGORY_LABELS } from '../constants/theme';
+import { COLORS, COLOR_SWATCHES, COLOR_LABELS, CATEGORY_LABELS } from '../constants/theme';
 import { updateClothingItem, deleteClothingItem } from '../api/wardrobeApi';
 import { useWardrobe } from '../context/WardrobeContext';
 
 const TYPES = [
-  { value: 'top',    label: 'Top' },
-   { value: 'sweater', label: 'Sweater'},
-  { value: 'bottom', label: 'Bottom' },
-  { value: 'shoes',  label: 'Shoes' },
-  { value: 'hat',    label: 'Hat' },
-  { value: 'other',  label: 'Other' },
+  { value: 'top',     label: 'Top' },
+  { value: 'sweater', label: 'Sweater / Hoodie' },
+  { value: 'bottom',  label: 'Bottom' },
+  { value: 'shoes',   label: 'Shoes' },
+  { value: 'hat',     label: 'Hat' },
+  { value: 'other',   label: 'Other' },
 ];
 
 const COLOR_OPTIONS = [
@@ -86,16 +86,8 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
   const [editColor, setEditColor] = useState(item.color);
   const [editDescription, setEditDescription] = useState(item.description || '');
   const [saving, setSaving] = useState(false);
+  const scrollRef = useRef(null);
   const { updateItem } = useWardrobe();
-
-  // Update local state when item changes (e.g., after successful save)
-  React.useEffect(() => {
-    if (!editMode) {
-      setEditType(item.type);
-      setEditColor(item.color);
-      setEditDescription(item.description || '');
-    }
-  }, [item, editMode]);
 
   const openModal = () => {
     setEditType(item.type);
@@ -118,17 +110,10 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
         color: editColor,
         description: editDescription,
       });
-      // If backend didn't return description, add it from local state
-      const itemWithDescription = {
-        ...updated,
-        description: updated.description || editDescription,
-      };
-      updateItem(itemWithDescription);
+      updateItem(updated);
       setEditMode(false);
     } catch (e) {
-      // Still update locally even if backend fails
-      const localUpdate = { ...item, type: editType, color: editColor, description: editDescription };
-      updateItem(localUpdate);
+      updateItem({ ...item, type: editType, color: editColor, description: editDescription });
       setEditMode(false);
     } finally {
       setSaving(false);
@@ -180,7 +165,7 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
         <KeyboardAvoidingView
           style={styles.modalContainer}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+          keyboardVerticalOffset={0}
         >
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={closeModal} hitSlop={8}>
@@ -199,6 +184,7 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
           </View>
 
           <ScrollView
+            ref={scrollRef}
             contentContainerStyle={styles.modalContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
@@ -245,6 +231,11 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                   onChangeText={setEditDescription}
                   multiline
                   maxLength={200}
+                  onFocus={() => {
+                    setTimeout(() => {
+                      scrollRef.current?.scrollToEnd({ animated: true });
+                    }, 300);
+                  }}
                 />
 
                 <TouchableOpacity
