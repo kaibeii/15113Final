@@ -266,7 +266,7 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                 </View>
 
                 <View style={styles.itemDescriptionBox}>
-                  <Text style={styles.itemDescriptionLabel}>Description</Text>
+                  <Text style={styles.uppercaseLabel}>Description</Text>
                   {item.description ? (
                     <Text style={styles.itemDescriptionText}>{item.description}</Text>
                   ) : (
@@ -285,7 +285,7 @@ export default function ClothingItem({ item, onDelete, size = 100 }) {
                   onPress={() => setEditMode(true)}
                   activeOpacity={0.8}
                 >
-                  <Ionicons name="pencil-outline" size={16} color={COLORS.purple600} />
+                  <Ionicons name="pencil-outline" size={16} color={COLORS.black} />
                   <Text style={styles.outlineBtnText}>Edit item</Text>
                 </TouchableOpacity>
               </>

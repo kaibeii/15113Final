@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, RADIUS, SPACING } from '../constants/theme';
+import { COLORS, RADIUS, SPACING, FONTS } from '../constants/theme';
 
 const styles = StyleSheet.create({
 
@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background,
   },
   center: {
     flex: 1,
@@ -15,73 +15,109 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: SPACING.xl,
     gap: SPACING.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background,
   },
   screenHeader: {
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.sm,
+    paddingTop: SPACING.xl,
     paddingBottom: SPACING.sm,
   },
   screenTitle: {
-    fontSize: 22,
-    fontWeight: '500',
+    fontSize: 30,
+    fontFamily: FONTS.heading,
     color: COLORS.black,
+    letterSpacing: 0.3,
   },
   screenSubtitle: {
     fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
-    marginTop: 2,
+    marginTop: 3,
   },
   sectionLabel: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     color: COLORS.gray600,
+    letterSpacing: 0.2,
   },
   optional: {
-    fontWeight: '400',
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
+  },
+
+  // Consolidated: empty state titles and text
+  emptyTitle: {
+    fontSize: 18,
+    fontFamily: FONTS.heading,
+    color: COLORS.black,
+    letterSpacing: 0.2,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: FONTS.light,
+    color: COLORS.gray400,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
+  // Consolidated: uppercase label used across wardrobe, item detail, outfit modal
+  uppercaseLabel: {
+    fontSize: 10,
+    fontFamily: FONTS.medium,
+    color: COLORS.gray400,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+
+  // Consolidated: base card used across item cards, outfit cards, modal items
+  card: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.md,
+    borderWidth: 0.3,
+    borderColor: COLORS.gray100,
   },
 
   // Shared chip
   chip: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
+    paddingVertical: 7,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderWidth: 0.5,
     borderColor: COLORS.gray100,
   },
   chipActive: {
-    backgroundColor: COLORS.purple50,
-    borderColor: COLORS.purple200,
+    backgroundColor: COLORS.black,
+    borderColor: COLORS.black,
   },
   chipText: {
     fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray600,
-    fontWeight: '400',
   },
   chipTextActive: {
-    color: COLORS.purple800,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
   },
 
-  // Shared primary button
+  // Shared primary button — black
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
-    backgroundColor: COLORS.purple600,
+    backgroundColor: COLORS.black,
     borderRadius: RADIUS.lg,
-    paddingVertical: 14,
+    paddingVertical: 15,
   },
   primaryBtnDisabled: {
     backgroundColor: COLORS.gray100,
   },
   primaryBtnText: {
+    fontFamily: FONTS.medium,
     color: COLORS.white,
     fontSize: 15,
-    fontWeight: '500',
+    letterSpacing: 0.2,
   },
 
   // Shared outline button
@@ -91,14 +127,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: SPACING.xs,
     borderWidth: 0.5,
-    borderColor: COLORS.purple400,
+    borderColor: COLORS.gray200,
     borderRadius: RADIUS.lg,
-    paddingVertical: 12,
+    paddingVertical: 13,
   },
   outlineBtnText: {
     fontSize: 14,
-    color: COLORS.purple600,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.black,
   },
 
   // Shared text input
@@ -108,16 +144,17 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     fontSize: 14,
+    fontFamily: FONTS.light,
     color: COLORS.black,
-    minHeight: 80,
+    minHeight: 88,
     textAlignVertical: 'top',
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
   },
 
   // Shared modal
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -125,13 +162,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 0.3,
     borderBottomColor: COLORS.gray100,
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 17,
+    fontFamily: FONTS.heading,
     color: COLORS.black,
+    letterSpacing: 0.2,
   },
   modalContent: {
     padding: SPACING.lg,
@@ -139,26 +177,29 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 14,
-    color: COLORS.purple600,
+    fontFamily: FONTS.light,
+    color: COLORS.gray600,
   },
 
   // Shared badges
   typeBadge: {
-    backgroundColor: COLORS.purple50,
+    backgroundColor: COLORS.gray50,
     borderRadius: RADIUS.full,
     paddingHorizontal: SPACING.md,
     paddingVertical: 6,
+    borderWidth: 0.3,
+    borderColor: COLORS.gray100,
   },
   typeBadgeText: {
     fontSize: 13,
-    color: COLORS.purple800,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.black,
   },
   colorBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.full,
     paddingHorizontal: SPACING.md,
     paddingVertical: 6,
@@ -167,8 +208,8 @@ const styles = StyleSheet.create({
   },
   colorBadgeText: {
     fontSize: 13,
+    fontFamily: FONTS.medium,
     color: COLORS.gray600,
-    fontWeight: '500',
   },
   tagsRow: {
     flexDirection: 'row',
@@ -179,20 +220,60 @@ const styles = StyleSheet.create({
   // Shared empty state
   emptyState: {
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: 70,
     paddingHorizontal: SPACING.xl,
     gap: SPACING.sm,
   },
-  emptyStateTitle: {
-    fontSize: 16,
-    fontWeight: '500',
+
+  // ── TAB BAR ─────────────────────────────────────────────────────────────
+
+  tabBar: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    backgroundColor: COLORS.white,
+    borderTopWidth: 0.3,
+    borderTopColor: COLORS.gray100,
+    paddingBottom: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 3,
+    paddingVertical: SPACING.xs,
+  },
+  tabLabel: {
+    fontSize: 10,
+    fontFamily: FONTS.light,
+    color: COLORS.gray400,
+  },
+  tabLabelActive: {
+    fontFamily: FONTS.medium,
     color: COLORS.black,
   },
-  emptyStateText: {
-    fontSize: 14,
-    color: COLORS.gray400,
-    textAlign: 'center',
-    lineHeight: 22,
+  plusWrap: {
+    flex: 0.8,
+    alignItems: 'center',
+    paddingBottom: SPACING.sm,
+  },
+  plusBtn: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: COLORS.black,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2,
+    marginTop: -22,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  plusBtnActive: {
+    backgroundColor: COLORS.primarySoft,
   },
 
   // ── WARDROBE SCREEN ─────────────────────────────────────────────────────
@@ -216,9 +297,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   wardrobeSectionLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: COLORS.gray600,
+    // uses uppercaseLabel — referenced directly in component
+    fontSize: 10,
+    fontFamily: FONTS.medium,
+    color: COLORS.gray400,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
     marginBottom: SPACING.sm,
   },
   wardrobeGrid: {
@@ -252,14 +336,15 @@ const styles = StyleSheet.create({
     padding: SPACING.sm,
   },
   camHintPill: {
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
     borderRadius: RADIUS.full,
     paddingHorizontal: SPACING.md,
-    paddingVertical: 5,
+    paddingVertical: 6,
   },
   camHintText: {
     color: COLORS.white,
     fontSize: 12,
+    fontFamily: FONTS.light,
   },
   viewfinder: {
     position: 'absolute',
@@ -271,31 +356,31 @@ const styles = StyleSheet.create({
   },
   corner: {
     position: 'absolute',
-    width: 22,
-    height: 22,
+    width: 24,
+    height: 24,
   },
   cornerTL: {
     top: 0, left: 0,
-    borderTopWidth: 2.5, borderLeftWidth: 2.5,
-    borderColor: COLORS.purple200,
+    borderTopWidth: 2, borderLeftWidth: 2,
+    borderColor: COLORS.white,
     borderTopLeftRadius: 4,
   },
   cornerTR: {
     top: 0, right: 0,
-    borderTopWidth: 2.5, borderRightWidth: 2.5,
-    borderColor: COLORS.purple200,
+    borderTopWidth: 2, borderRightWidth: 2,
+    borderColor: COLORS.white,
     borderTopRightRadius: 4,
   },
   cornerBL: {
     bottom: 0, left: 0,
-    borderBottomWidth: 2.5, borderLeftWidth: 2.5,
-    borderColor: COLORS.purple200,
+    borderBottomWidth: 2, borderLeftWidth: 2,
+    borderColor: COLORS.white,
     borderBottomLeftRadius: 4,
   },
   cornerBR: {
     bottom: 0, right: 0,
-    borderBottomWidth: 2.5, borderRightWidth: 2.5,
-    borderColor: COLORS.purple200,
+    borderBottomWidth: 2, borderRightWidth: 2,
+    borderColor: COLORS.white,
     borderBottomRightRadius: 4,
   },
   shutterArea: {
@@ -306,40 +391,42 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   shutter: {
-    width: 68, height: 68,
-    borderRadius: 34,
+    width: 72, height: 72,
+    borderRadius: 36,
     borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.8)',
+    borderColor: 'rgba(255,255,255,0.85)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   shutterInner: {
-    width: 52, height: 52,
-    borderRadius: 26,
+    width: 56, height: 56,
+    borderRadius: 28,
     backgroundColor: COLORS.white,
   },
   permTitle: {
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 20,
+    fontFamily: FONTS.heading,
     color: COLORS.black,
     textAlign: 'center',
+    letterSpacing: 0.2,
   },
   permSub: {
     fontSize: 14,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
     textAlign: 'center',
     lineHeight: 22,
   },
   permBtn: {
-    backgroundColor: COLORS.purple600,
+    backgroundColor: COLORS.black,
     borderRadius: RADIUS.lg,
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.md,
   },
   permBtnText: {
+    fontFamily: FONTS.medium,
     color: COLORS.white,
     fontSize: 15,
-    fontWeight: '500',
   },
   previewHeader: {
     flexDirection: 'row',
@@ -347,13 +434,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 0.3,
     borderBottomColor: COLORS.gray100,
   },
   previewTitle: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 17,
+    fontFamily: FONTS.heading,
     color: COLORS.black,
+    letterSpacing: 0.2,
   },
   previewScroll: {
     flex: 1,
@@ -364,8 +452,8 @@ const styles = StyleSheet.create({
   },
   previewImage: {
     width: '100%',
-    height: 240,
-    backgroundColor: COLORS.gray50,
+    height: 260,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
   },
   typeRow: {
@@ -375,25 +463,26 @@ const styles = StyleSheet.create({
   typeChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 6,
     paddingHorizontal: SPACING.md,
-    paddingVertical: 8,
+    paddingVertical: 9,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderWidth: 0.5,
     borderColor: COLORS.gray100,
   },
   typeChipActive: {
-    backgroundColor: COLORS.purple50,
-    borderColor: COLORS.purple400,
+    backgroundColor: COLORS.black,
+    borderColor: COLORS.black,
   },
   typeChipText: {
     fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray600,
   },
   typeChipTextActive: {
-    color: COLORS.purple800,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
   },
   colorHeader: {
     flexDirection: 'row',
@@ -402,6 +491,7 @@ const styles = StyleSheet.create({
   },
   colorHint: {
     fontSize: 11,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
     flex: 1,
     textAlign: 'right',
@@ -416,33 +506,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 6,
+    paddingVertical: 7,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderWidth: 0.5,
     borderColor: COLORS.gray100,
   },
   colorOptionSelected: {
-    backgroundColor: COLORS.purple50,
-    borderColor: COLORS.purple400,
+    backgroundColor: COLORS.black,
+    borderColor: COLORS.black,
   },
   colorOptionLabel: {
     fontSize: 12,
+    fontFamily: FONTS.light,
     color: COLORS.gray600,
   },
   colorOptionLabelSelected: {
-    color: COLORS.purple800,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
   },
 
   // ── OUTFITS SCREEN ──────────────────────────────────────────────────────
 
-  outfitsTabRow: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.lg,
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-  },
   outfitsScroll: {
     flex: 1,
   },
@@ -450,18 +535,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
   },
   outfitGeneratedCard: {
-    backgroundColor: COLORS.purple50,
+    backgroundColor: COLORS.gray50,
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
     minHeight: 200,
     justifyContent: 'center',
+    borderWidth: 0.3,
+    borderColor: COLORS.gray100,
   },
   outfitGeneratedTitle: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: COLORS.purple800,
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    color: COLORS.gray600,
     marginBottom: SPACING.md,
+    letterSpacing: 0.2,
   },
   outfitSlots: {
     flexDirection: 'row',
@@ -481,8 +569,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.5,
-    borderColor: COLORS.purple100,
+    borderWidth: 0.3,
+    borderColor: COLORS.gray100,
   },
   outfitSlotImage: {
     width: '100%',
@@ -490,12 +578,13 @@ const styles = StyleSheet.create({
   },
   outfitSlotEmptyText: {
     fontSize: 10,
+    fontFamily: FONTS.light,
     color: COLORS.gray200,
   },
   outfitSlotLabel: {
     fontSize: 11,
-    color: COLORS.purple600,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.gray600,
   },
   outfitActions: {
     flexDirection: 'row',
@@ -507,9 +596,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
-    backgroundColor: COLORS.purple600,
+    backgroundColor: COLORS.black,
     borderRadius: RADIUS.md,
-    paddingVertical: 10,
+    paddingVertical: 11,
   },
   outfitActionSaved: {
     backgroundColor: COLORS.teal600,
@@ -522,19 +611,19 @@ const styles = StyleSheet.create({
     gap: 5,
     backgroundColor: 'transparent',
     borderWidth: 0.5,
-    borderColor: COLORS.purple400,
+    borderColor: COLORS.gray200,
     borderRadius: RADIUS.md,
-    paddingVertical: 10,
+    paddingVertical: 11,
   },
   outfitActionTextPrimary: {
+    fontFamily: FONTS.medium,
     color: COLORS.white,
     fontSize: 13,
-    fontWeight: '500',
   },
   outfitActionTextSecondary: {
-    color: COLORS.purple600,
+    fontFamily: FONTS.medium,
+    color: COLORS.black,
     fontSize: 13,
-    fontWeight: '500',
   },
   outfitGeneratingState: {
     alignItems: 'center',
@@ -543,7 +632,8 @@ const styles = StyleSheet.create({
   },
   outfitGeneratingText: {
     fontSize: 14,
-    color: COLORS.purple600,
+    fontFamily: FONTS.light,
+    color: COLORS.gray600,
   },
   outfitEmptySlots: {
     flexDirection: 'row',
@@ -556,13 +646,14 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.5,
-    borderColor: COLORS.purple100,
+    borderWidth: 0.3,
+    borderColor: COLORS.gray100,
     opacity: 0.6,
   },
   outfitEmptyText: {
     fontSize: 13,
-    color: COLORS.purple400,
+    fontFamily: FONTS.light,
+    color: COLORS.gray400,
     textAlign: 'center',
   },
   outfitEmptyWrap: {
@@ -575,60 +666,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
-    backgroundColor: COLORS.purple600,
+    backgroundColor: COLORS.black,
     borderRadius: RADIUS.lg,
-    paddingVertical: 14,
+    paddingVertical: 15,
     marginBottom: SPACING.sm,
   },
   generateBtnDisabled: {
     backgroundColor: COLORS.gray100,
   },
   generateBtnText: {
+    fontFamily: FONTS.medium,
     color: COLORS.white,
     fontSize: 15,
-    fontWeight: '500',
+    letterSpacing: 0.2,
   },
   generateHintText: {
     fontSize: 12,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
     textAlign: 'center',
     lineHeight: 20,
-  },
-  savedEmptyWrap: {
-    alignItems: 'center',
-    paddingTop: 60,
-    gap: SPACING.sm,
-  },
-  savedEmptyTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: COLORS.black,
-  },
-  savedEmptyText: {
-    fontSize: 14,
-    color: COLORS.gray400,
-    textAlign: 'center',
-    lineHeight: 22,
   },
   savedSection: {
     marginTop: SPACING.xl,
   },
   savedSectionTitle: {
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: FONTS.heading,
     color: COLORS.black,
     marginBottom: SPACING.md,
+    letterSpacing: 0.2,
   },
 
   // ── CLOTHING ITEM COMPONENT ─────────────────────────────────────────────
 
   itemCard: {
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.md,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.5,
+    borderWidth: 0.3,
     borderColor: COLORS.gray100,
   },
   itemImage: {
@@ -642,8 +720,8 @@ const styles = StyleSheet.create({
   },
   itemColorDotWrap: {
     position: 'absolute',
-    bottom: 5,
-    right: 5,
+    bottom: 6,
+    right: 6,
   },
   colorDot: {
     overflow: 'hidden',
@@ -658,7 +736,7 @@ const styles = StyleSheet.create({
   itemModalImageWrap: {
     width: '100%',
     height: 300,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
     alignItems: 'center',
@@ -674,30 +752,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemDescriptionBox: {
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     gap: SPACING.xs,
-  },
-  itemDescriptionLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: COLORS.gray400,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    borderWidth: 0.3,
+    borderColor: COLORS.gray100,
   },
   itemDescriptionText: {
     fontSize: 15,
+    fontFamily: FONTS.light,
     color: COLORS.black,
-    lineHeight: 22,
+    lineHeight: 23,
   },
   itemDescriptionEmpty: {
     fontSize: 14,
+    fontFamily: FONTS.light,
     color: COLORS.gray200,
     fontStyle: 'italic',
   },
   itemDateText: {
     fontSize: 12,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
     textAlign: 'center',
   },
@@ -711,23 +787,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 6,
+    paddingVertical: 7,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderWidth: 0.5,
     borderColor: COLORS.gray100,
   },
   colorPickerItemSelected: {
-    backgroundColor: COLORS.purple50,
-    borderColor: COLORS.purple400,
+    backgroundColor: COLORS.black,
+    borderColor: COLORS.black,
   },
   colorPickerLabel: {
     fontSize: 12,
+    fontFamily: FONTS.light,
     color: COLORS.gray600,
   },
   colorPickerLabelSelected: {
-    color: COLORS.purple800,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
   },
 
   // ── OUTFIT CARD COMPONENT ───────────────────────────────────────────────
@@ -736,11 +813,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: COLORS.gray50,
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.md,
     padding: SPACING.sm,
     marginBottom: SPACING.sm,
-    borderWidth: 0.5,
+    borderWidth: 0.3,
     borderColor: COLORS.gray100,
   },
   outfitCardSlots: {
@@ -748,14 +825,15 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   outfitCardSlot: {
-    width: 44,
-    height: 52,
-    backgroundColor: COLORS.white,
+    width: 46,
+    height: 54,
+    backgroundColor: COLORS.gray50,
     borderRadius: RADIUS.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.5,
+    borderWidth: 0.3,
     borderColor: COLORS.gray100,
+    overflow: 'hidden',
   },
   outfitCardSlotImage: {
     width: '100%',
@@ -766,12 +844,13 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   outfitCardTitle: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 13,
+    fontFamily: FONTS.medium,
     color: COLORS.black,
   },
   outfitCardDate: {
-    fontSize: 10,
+    fontSize: 11,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
   },
   outfitCardBadge: {
@@ -783,25 +862,27 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   outfitCardBadgeText: {
-    fontSize: 9,
+    fontSize: 10,
+    fontFamily: FONTS.medium,
     color: COLORS.teal600,
-    fontWeight: '500',
   },
   outfitCardDeleteBtn: {
     padding: SPACING.xs,
   },
 
-  // ── OUTFIT MODAL ───────────────────────────────────────────────────────────
+  // ── OUTFIT MODAL ────────────────────────────────────────────────────────
 
   outfitModalTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 22,
+    fontFamily: FONTS.heading,
     color: COLORS.black,
     textAlign: 'center',
     marginBottom: SPACING.xs,
+    letterSpacing: 0.3,
   },
   outfitModalDate: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
     textAlign: 'center',
     marginBottom: SPACING.xl,
@@ -814,7 +895,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
-    borderWidth: 0.5,
+    borderWidth: 0.3,
     borderColor: COLORS.gray100,
     gap: SPACING.md,
   },
@@ -835,16 +916,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: SPACING.xs,
   },
-  outfitModalItemLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: COLORS.gray400,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
   outfitModalItemType: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     color: COLORS.black,
   },
   outfitModalItemColor: {
@@ -853,73 +927,23 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   outfitModalItemColorText: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray600,
   },
   outfitModalItemDescription: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray600,
     lineHeight: 20,
   },
   outfitModalItemEmpty: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: FONTS.light,
     color: COLORS.gray400,
     fontStyle: 'italic',
   },
 
-
-  // ── TAB BAR  ON MAIN PAGES ─────────────────────────────────────────────────────────────
-
-tabBar: {
-  flexDirection: 'row',
-  alignItems: 'flex-end',
-  backgroundColor: COLORS.white,
-  borderTopWidth: 0.5,
-  borderTopColor: '#E5E5E0',
-  paddingBottom: SPACING.sm,
-  paddingTop: SPACING.xs,
-  paddingHorizontal: SPACING.sm,
-},
-tabItem: {
-  flex: 1,
-  alignItems: 'center',
-  gap: 3,
-  paddingVertical: SPACING.xs,
-},
-tabLabel: {
-  fontSize: 10,
-  color: COLORS.gray400,
-  fontWeight: '400',
-},
-tabLabelActive: {
-  color: COLORS.purple600,
-  fontWeight: '500',
-},
-plusWrap: {
-  flex: 0.8,
-  alignItems: 'center',
-  paddingBottom: SPACING.sm,
-},
-plusBtn: {
-  width: 52,
-  height: 52,
-  borderRadius: 26,
-  backgroundColor: COLORS.purple600,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: 2,
-  marginTop: -20,
-  shadowColor: COLORS.purple600,
-  shadowOffset: { width: 0, height: 3 },
-  shadowOpacity: 0.25,
-  shadowRadius: 6,
-  elevation: 6,
-},
-plusBtnActive: {
-  backgroundColor: COLORS.purple800,
-},
 });
 
 export default styles;
-
-

@@ -17,7 +17,7 @@ import { COLORS, CATEGORY_LABELS, CATEGORY_ORDER, FILTER_OPTIONS } from '../cons
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_GAP = 8;
-const H_PAD = 16;
+const H_PAD = 20;
 const ITEM_SIZE = Math.floor((SCREEN_WIDTH - H_PAD * 2 - ITEM_GAP * 2) / 3);
 
 export default function WardrobeScreen() {
@@ -35,7 +35,6 @@ export default function WardrobeScreen() {
   }, []);
 
   useEffect(() => {
-    // Load both wardrobe items and saved outfits on startup
     loadItems();
     loadSavedOutfits();
   }, []);
@@ -64,7 +63,7 @@ export default function WardrobeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.screenHeader}>
-        <Text style={styles.screenTitle}>My wardrobe</Text>
+        <Text style={styles.screenTitle}>Your Digital Wardrobe!</Text>
         <Text style={styles.screenSubtitle}>
           {items.length} {items.length === 1 ? 'item' : 'items'}
         </Text>
@@ -91,7 +90,7 @@ export default function WardrobeScreen() {
       </ScrollView>
 
       {loading && !refreshing ? (
-        <ActivityIndicator style={{ marginTop: 40 }} color={COLORS.purple600} />
+        <ActivityIndicator style={{ marginTop: 40 }} color={COLORS.black} />
       ) : (
         <ScrollView
           style={styles.wardrobeScroll}
@@ -144,8 +143,8 @@ function EmptyState({ filter }) {
   return (
     <View style={styles.emptyState}>
       <Text style={{ fontSize: 40 }}>👕</Text>
-      <Text style={styles.emptyStateTitle}>No items yet</Text>
-      <Text style={styles.emptyStateText}>
+      <Text style={styles.emptyTitle}>No items yet</Text>
+      <Text style={styles.emptyText}>
         {filter
           ? `No ${CATEGORY_LABELS[filter]?.toLowerCase()} in your wardrobe.`
           : 'Tap the + button to scan your first clothing item.'}

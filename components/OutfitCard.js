@@ -66,7 +66,7 @@ function OutfitItem({ item, label }) {
           <Ionicons name="shirt-outline" size={60} color={COLORS.gray200} />
         </View>
         <View style={styles.outfitModalItemMeta}>
-          <Text style={styles.outfitModalItemLabel}>{label}</Text>
+          <Text style={styles.uppercaseLabel}>{label}</Text>
           <Text style={styles.outfitModalItemEmpty}>No {label.toLowerCase()} selected</Text>
         </View>
       </View>
@@ -83,7 +83,7 @@ function OutfitItem({ item, label }) {
         )}
       </View>
       <View style={styles.outfitModalItemMeta}>
-        <Text style={styles.outfitModalItemLabel}>{label}</Text>
+        <Text style={styles.uppercaseLabel}>{label}</Text>
         <Text style={styles.outfitModalItemType}>{CATEGORY_LABELS[item.type] || item.type}</Text>
         <View style={styles.outfitModalItemColor}>
           <ColorDot color={item.color} size={14} />
@@ -107,21 +107,13 @@ export default function OutfitCard({ outfit, onDelete, showDate = true }) {
     ]);
   };
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
   const dateLabel = outfit.savedAt
     ? new Date(outfit.savedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     : null;
 
   return (
     <>
-      <TouchableOpacity style={styles.outfitCard} onPress={openModal} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.outfitCard} onPress={() => setModalVisible(true)} activeOpacity={0.8}>
         <View style={styles.outfitCardSlots}>
           <SlotPreview item={outfit.top} />
           <SlotPreview item={outfit.bottom} />
@@ -149,14 +141,14 @@ export default function OutfitCard({ outfit, onDelete, showDate = true }) {
         visible={modalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={closeModal}
+        onRequestClose={() => setModalVisible(false)}
       >
-       <SafeAreaView style={styles.modalContainer}>
+        <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={closeModal} hitSlop={8}>
+            <TouchableOpacity onPress={() => setModalVisible(false)} hitSlop={8}>
               <Ionicons name="close" size={24} color={COLORS.black} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>Outfit Details</Text>
+            <Text style={styles.modalTitle}>Outfit details</Text>
             <View style={{ width: 24 }} />
           </View>
 
@@ -165,16 +157,16 @@ export default function OutfitCard({ outfit, onDelete, showDate = true }) {
             showsVerticalScrollIndicator={false}
           >
             <Text style={styles.outfitModalTitle}>
-              {outfit.name || 'Saved Outfit'}
+              {outfit.name || 'Saved outfit'}
             </Text>
             {dateLabel && (
               <Text style={styles.outfitModalDate}>Saved on {dateLabel}</Text>
             )}
 
             <View style={styles.outfitModalItems}>
-              <OutfitItem item={outfit.top} label="Top" />
+              <OutfitItem item={outfit.top}    label="Top" />
               <OutfitItem item={outfit.bottom} label="Bottom" />
-              <OutfitItem item={outfit.shoes} label="Shoes" />
+              <OutfitItem item={outfit.shoes}  label="Shoes" />
             </View>
 
             <View style={{ height: 32 }} />
