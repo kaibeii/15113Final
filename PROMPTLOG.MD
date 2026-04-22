@@ -48,3 +48,7 @@ I moved back to Claude and gave context to what Copilot changed, and asked it to
 - Give me a list of changes I made and a review of them. *(I also gave Claude a text block that described the bugs it fixed)*
 - I want to create a new category for sweaters/hoodies
 - Saved outfits should still be saved once app is reopened, it needs to also b e stored in the database
+- X button in camera does not exit out of camera into wardrobe page when clicked
+- There are keyboard issues with description field, fix this 
+- Unknown colors showing in outfit generation logs even though color dot shows on grid; why is this happening? Something isn't working properly with cloudinary
+- Consolidate the styling again and remove duplicates

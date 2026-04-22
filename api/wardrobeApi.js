@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.0.6:3000';
+const BASE_URL = 'https://one5113finalbackend.onrender.com';
 
 const api = axios.create({
   baseURL: BASE_URL,

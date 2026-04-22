@@ -1,183 +1,97 @@
-# 15113Final — Outfit Picker App
+# Outfit Picker — Frontend
 
-React Native + Expo mobile app that lets users digitise their wardrobe and generate color-matched outfits. Built for CMU 15-113.
+A React Native mobile app that lets users digitise their wardrobe by photographing clothing items and generate color-matched outfits from their collection.
+
+Built for CMU 15-113.
 
 ---
 
-## Tech Stack
+## What the project does
+
+Outfit Picker lets you build a digital wardrobe on your phone. You take a photo of a clothing item, the background is automatically removed, and the app detects the dominant color. You then confirm the clothing type and optionally add a description. Once your wardrobe is built up, you can generate outfits — the app uses color matching logic to pair items that work well together, favouring combinations like navy + beige, red + black, or any item with a neutral.
+
+Every item and saved outfit persists to a cloud database so your wardrobe is always there when you reopen the app.
+
+---
+
+## Features I'm most proud of
+
+**Background removal + color detection pipeline**
+The most technically interesting part of the project is the image processing pipeline. When you upload a photo, the backend sends it to remove.bg to strip the background, then uploads the clean PNG to Cloudinary which analyses the image and returns the dominant hex colors. The backend then maps those hex values to named color families using RGB distance across multiple reference values per family — so `#1a237e` correctly maps to navy even though it's not an exact match. This was tricky to get right and makes the color tagging feel automatic and accurate.
+
+**Color-based outfit generation**
+The outfit generator doesn't pick randomly; it uses compatibility table to match colors intelligently. Neutrals (black, white, grey, beige, brown) pair with everything. Solid colors are matched against specific pairs (navy pairs with beige, white, grey, brown; red pairs with navy, white, black, grey). Multicolor and pattern items are only paired with neutrals. Same colors only match if they're both neutral — so all-black works but all-red doesn't. This makes the generated outfits feel considered rather than random.
+
+**App layout and UX**
+The three-tab layout with a floating + button in the centre feels natural for a wardrobe app. The item detail modal, edit flow, and saved outfit cards all came together into a UI I'm happy with.
+
+---
+
+## How to use it
+
+1. Tap the **+** button in the centre of the tab bar to open the camera
+2. Take a photo of a clothing item or pick one from your library
+3. Select the type (Top, Sweater, Bottom, Shoes, Hat) and optionally pick a color and add a description
+4. Tap **Save to wardrobe** — the background is removed and the item is added to your wardrobe
+5. Go to the **Outfits** tab and tap **Generate outfit** to get a color-matched combination
+6. Save outfits you like — they appear below the generator and persist across sessions
+7. Tap any wardrobe item to see its details or edit the type, color, or description
+
+---
+
+## Tech stack
 
 | Technology | Purpose |
 |------------|---------|
 | React Native + Expo SDK 54 | Mobile app framework |
 | Expo Camera | Camera access for clothing photos |
 | Expo Image Picker | Photo library access |
+| Expo Font | Custom font loading (Inter + OffBit) |
 | React Navigation | Tab-based navigation |
 | Axios | HTTP requests to backend |
-| Context API | Global wardrobe state management |
+| Context API | Global wardrobe and outfit state |
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 15113Final/
-├── App.js                        ← Root component, tab navigator, WardrobeProvider
-├── app.json                      ← Expo config, permissions, SDK version
-├── babel.config.js               ← Babel preset for Expo
-├── package.json                  ← Dependencies
+├── App.js                        ← Root, tab navigator, font loading
+├── app.json                      ← Expo config, SDK version, permissions
+├── babel.config.js
+├── package.json
+├── assets/
+│   └── fonts/
+│       ├── Inter-Light.ttf
+│       ├── Inter-Regular.ttf
+│       ├── Inter-Medium.ttf
+│       └── OffBit-DotBold.ttf
 ├── api/
-│   └── wardrobeApi.js            ← All Axios calls to the backend
+│   └── wardrobeApi.js            ← All Axios calls to backend
 ├── components/
-│   ├── ClothingItem.js           ← Item card with color dot, detail modal, edit mode
-│   └── OutfitCard.js             ← Saved outfit row card
+│   ├── ClothingItem.js           ← Item card, detail modal, edit mode
+│   └── OutfitCard.js             ← Saved outfit card with detail modal
 ├── constants/
-│   └── theme.js                  ← Colors, spacing, category labels, color swatches
+│   └── theme.js                  ← Colors, fonts, spacing, categories
 ├── context/
-│   └── WardrobeContext.js        ← Global state: items + saved outfits
-└── screens/
-    ├── WardrobeScreen.js         ← Home tab: wardrobe grid with category sections
-    ├── CameraScreen.js           ← Centre tab: camera, type selector, color picker, description
-    └── OutfitsScreen.js          ← Right tab: generate + save outfits
+│   └── WardrobeContext.js        ← Global state — items and saved outfits
+├── screens/
+│   ├── WardrobeScreen.js         ← Home tab: grid with category sections
+│   ├── CameraScreen.js           ← Centre tab: camera + confirm screen
+│   └── OutfitsScreen.js          ← Right tab: generate and save outfits
+└── styles/
+    └── index.js                  ← All styles in one file with section comments
 ```
 
 ---
 
-## Features
-
-### Wardrobe (Home tab)
-- Displays all clothing items in a grid, grouped by category (Tops, Bottoms, Shoes, Hats)
-- Filter chips at the top to view by category
-- Each item card shows a small color dot in the bottom-right corner
-- Tap any item to open a detail modal showing:
-  - Full image
-  - Type badge (e.g. Top, Bottom)
-  - Color tag (e.g. Navy, Multicolor, Pattern)
-  - Optional description
-  - Date added
-  - Edit button
-  - Delete button
-- Pull to refresh loads latest items from the backend
-
-### Editing an item
-- Tap any item card → detail modal opens
-- Tap **Edit item** at the bottom → modal switches to edit mode
-- Edit mode allows changing:
-  - Type (Top / Bottom / Shoes / Hat / Other)
-  - Color (full color picker with all color families)
-  - Description (free text)
-- Tap **Save changes** → calls `PATCH /items/:id` on the backend
-- Item updates instantly in the wardrobe grid
-- Tap **Cancel** to exit edit mode without saving
-
-### Camera (Centre + button)
-- Opens camera viewfinder with corner guides
-- Flip between front and back camera
-- Pick from photo library instead
-- After capturing, confirm screen shows:
-  - Type selector (Top / Bottom / Shoes / Hat / Other)
-  - Color picker — optional manual selection, auto-detected by Cloudinary if left blank
-  - Optional text description
-- Tapping back retakes the photo without crashing (camera remounts via key prop)
-
-### Color detection
-- When an item is uploaded, Cloudinary analyses the image and returns dominant hex colors
-- Backend maps hex values to named color families using RGB distance
-- If one color covers 60%+ of the image → single color tag (e.g. "navy")
-- If two colors are fairly even → "multicolor"
-- If 4+ colors spread across the image → "pattern"
-- User can manually override the auto-detected color at upload time or by editing later
-
-### Outfits (Right tab)
-- **Generated tab** — tap Generate outfit to get a color-matched combination
-  - Picks 1 top, 1 bottom, 1 pair of shoes
-  - Color matching rules:
-    - Neutrals (black, white, grey, beige, brown) pair with everything
-    - Solid colors matched against compatibility table (e.g. navy + beige, red + black)
-    - Multicolor/pattern items paired with neutrals only
-  - Save button keeps the outfit in the Saved tab
-  - Regenerate button picks a new combination
-- **Saved tab** — shows all saved outfits as cards with 3-slot previews
-  - Delete individual saved outfits
-
-### Human-in-the-loop design
-The app puts the user in control at every step. Type and color can be set manually at upload and edited at any time after saving. The auto-detection is a suggestion, not a final decision. This is a deliberate HCI design choice.
-
----
-
-## Screens
-
-### WardrobeScreen.js
-- Fetches items from `GET /items` on mount
-- Groups items by `type` field into category sections
-- Filter chips switch between grouped view and flat filtered grid
-- Each item rendered by `ClothingItem` component
-
-### CameraScreen.js
-- Uses `expo-camera` CameraView with a `key` prop to force remount between shots
-- After capture, shows a scrollable confirm screen with:
-  - Type chips
-  - Color picker grid (tap to select, tap again to deselect for auto-detect)
-  - Description text input
-- On save: calls `POST /upload` with image, type, color, and description
-- Falls back to local in-memory save if backend is unreachable
-
-### OutfitsScreen.js
-- Calls `GET /outfit` for color-matched generation
-- Falls back to local random selection if backend is unreachable
-- Saved outfits stored in WardrobeContext (in-memory, session only)
-
----
-
-## State Management
-
-All global state lives in `WardrobeContext.js`:
-
-```
-WardrobeContext
-├── items[]               ← all clothing items
-├── savedOutfits[]        ← outfits saved this session
-├── addItem(item)         ← adds item to wardrobe
-├── removeItem(id)        ← removes item from wardrobe
-├── updateItem(item)      ← replaces an item with updated version
-├── saveOutfit(outfit)    ← saves a generated outfit
-├── removeSavedOutfit(id) ← deletes a saved outfit
-└── getItemsByType(type)  ← filters items by category
-```
-
----
-
-## API Integration
-
-All backend calls are in `api/wardrobeApi.js`:
-
-| Function | Method | Endpoint | Description |
-|----------|--------|----------|-------------|
-| `uploadClothingItem` | POST | `/upload` | Send image, type, color, description |
-| `fetchWardrobeItems` | GET | `/items` | Load all wardrobe items |
-| `deleteClothingItem` | DELETE | `/items/:id` | Remove an item |
-| `updateClothingItem` | PATCH | `/items/:id` | Update type, color, description |
-| `generateOutfit` | GET | `/outfit` | Get a color-matched outfit |
-
-### Changing the backend URL
-
-For local development (phone + computer on same WiFi):
-```js
-const BASE_URL = 'http://192.168.x.x:3000';
-```
-
-For production (after deploying to Render):
-```js
-const BASE_URL = 'https://your-app.onrender.com';
-```
-
----
-
-## Getting Started
+## How to run locally
 
 ### Prerequisites
 - Node.js 18+
-- Expo Go app installed on your phone (iOS or Android)
-- Phone and computer on the same WiFi network (for local backend)
+- Expo Go installed on your phone (iOS or Android)
+- The backend running locally or deployed to Render
 
 ### Installation
 
@@ -187,7 +101,19 @@ npm install
 npx expo start
 ```
 
-Scan the QR code with Expo Go on your phone.
+Scan the QR code with Expo Go. Your phone and computer must be on the same WiFi network if running the backend locally.
+
+### Connecting to the backend
+
+Open `api/wardrobeApi.js` and set the URL:
+
+```js
+// For local backend (replace with your machine's local IP):
+const BASE_URL = 'http://yourmachineslocalip';
+
+// For deployed backend on Render:
+const BASE_URL = 'https://your-app.onrender.com';
+```
 
 ### If you see dependency warnings
 
@@ -197,65 +123,70 @@ npx expo install expo-status-bar expo-camera expo-image-picker expo-image-manipu
 
 ---
 
-## Running Without the Backend
+## Running without the backend
 
-The app degrades gracefully when the backend is not running:
+The app degrades gracefully when the backend is unreachable:
 
-- **Camera screen** — saves items locally with the captured photo URI
-- **Outfit generation** — picks randomly from in-memory items
-- **Edit item** — updates locally without persisting to database
-- **Wardrobe** — shows items added this session only
-
----
-
-## Color Tag System
-
-Colors are detected by the backend (via Cloudinary) and stored with each item. The frontend displays them as:
-
-- A small colored dot in the bottom-right corner of each item card
-- A color badge in the item detail modal
-- A selectable color in the edit modal and camera confirm screen
-
-| Tag | Display |
-|-----|---------|
-| black, white, grey, navy, blue, red, green, yellow, orange, pink, purple, brown, beige | Solid colored dot |
-| multicolor | Half-red, half-blue dot |
-| pattern | Striped ≋ indicator |
-| unknown | Grey dot |
+- Items are saved locally with the captured photo URI
+- Outfit generation picks randomly from in-memory items
+- Edits update locally without persisting to the database
+- Wardrobe shows only items added in the current session
 
 ---
 
-## Outfit Color Matching
+## Secrets handling
 
-The outfit generator uses these compatibility rules:
+There are **no secrets in the frontend**. The only configuration value is `BASE_URL` in `wardrobeApi.js` which is just the backend URL — not a credential.
+
+All API keys (remove.bg, Cloudinary, MongoDB) are stored in the backend's `.env` file which is listed in `.gitignore` and never committed to GitHub. On Render, secrets are stored as environment variables in the dashboard and injected at runtime.
+
+---
+
+## Color tag system
+
+Colors are detected automatically by Cloudinary and displayed as small dots on each item card.
+
+| Tag | What it means |
+|-----|---------------|
+| black, white, grey, navy, blue, red, green, yellow, orange, pink, purple, brown, beige | Single dominant color |
+| multicolor | Two colors fairly evenly distributed |
+| pattern | Four or more colors spread across the image |
+| unknown | Could not detect — user can set manually |
+
+Users can override the auto-detected color at upload time or by editing the item later.
+
+---
+
+## Outfit color matching rules
 
 ```
-Neutrals (black, white, grey, beige, brown)  →  match with everything
-Solid color  +  neutral                       →  always works
-Solid color  +  matching color pair           →  works (e.g. navy + beige)
-Multicolor   +  neutral                       →  works
-Multicolor   +  multicolor                    →  avoided
-Pattern      +  neutral                       →  works
-Pattern      +  pattern                       →  avoided
+Neutrals (black, white, grey, beige, brown) → pair with everything
+Same color + same color → only works for neutrals (all black ✅, all red ❌)
+Multicolor / pattern → pairs with neutrals only
+navy   → beige, white, grey, brown
+blue   → white, grey, beige, navy
+red    → navy, white, black, grey
+green  → beige, white, brown, navy
+yellow → navy, white, black, grey
+orange → navy, white, black, brown
+pink   → navy, white, black, grey
+purple → white, black, grey, beige
 ```
 
 ---
 
-## Known Issues & Limitations
+## Known limitations
 
-- Saved outfits are in-memory only — they reset when the app is closed
-- remove.bg free tier is limited to 50 background removals per month
-- Render free tier spins down after 15 minutes — first request after inactivity may be slow
-- Color detection works best on items photographed against a plain background
+- Render free tier spins down after 15 minutes of inactivity — first request may take 30 seconds
+- remove.bg free tier allows 50 background removals per month
+- Saved outfits store full item snapshots — if an item is deleted the outfit card still shows its last known image
 
 ---
 
-## Future Improvements
+## Future improvements
 
-- Persist saved outfits to MongoDB
 - Weather-based outfit filtering
-- Outfit history tracking
 - Style tags (casual, formal, smart-casual)
+- Outfit history and wear tracking
 - Most worn items statistics
 - Swipe to replace a single item in a generated outfit
-- Push notifications for daily outfit suggestion
