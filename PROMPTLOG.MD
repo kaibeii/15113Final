@@ -46,4 +46,4 @@ I mainly just debugged with Copilot so most of my prompts were for debugging. Th
 I moved back to Claude and gave context to what Copilot changed, and asked it to review all the changed files.
 
 - Give me a list of changes I made and a review of them. *(I also gave Claude a text block that described the bugs it fixed)*
-- A
+- I want to create a new category for sweaters/hoodies

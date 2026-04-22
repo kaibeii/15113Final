@@ -23,6 +23,7 @@ import { COLORS, COLOR_SWATCHES, COLOR_LABELS } from '../constants/theme';
 
 const TYPES = [
   { value: 'top',    label: 'Top',    icon: 'shirt-outline' },
+   { value: 'sweater', label: 'Sweater',   icon: 'layers-outline' },
   { value: 'bottom', label: 'Bottom', icon: 'reorder-three-outline' },
   { value: 'shoes',  label: 'Shoes',  icon: 'footsteps-outline' },
   { value: 'hat',    label: 'Hat',    icon: 'umbrella-outline' },

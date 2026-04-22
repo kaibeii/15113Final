@@ -43,18 +43,20 @@ export const SPACING = {
 };
 
 export const CATEGORY_LABELS = {
-  top:    'Tops',
-  bottom: 'Bottoms',
-  shoes:  'Shoes',
-  hat:    'Hats',
-  other:  'Other',
+  top:      'Tops',
+  sweater:  'Sweaters',
+  bottom:   'Bottoms',
+  shoes:    'Shoes',
+  hat:      'Hats',
+  other:    'Other',
 };
 
-export const CATEGORY_ORDER = ['top', 'bottom', 'shoes', 'hat', 'other'];
+export const CATEGORY_ORDER = ['top', 'sweater','bottom', 'shoes', 'hat', 'other'];
 
 export const FILTER_OPTIONS = [
   { label: 'All',     value: 'all' },
   { label: 'Tops',    value: 'top' },
+  {label: 'Sweaters', value: 'sweater' },
   { label: 'Bottoms', value: 'bottom' },
   { label: 'Shoes',   value: 'shoes' },
   { label: 'Hats',    value: 'hat' },

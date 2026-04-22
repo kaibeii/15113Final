@@ -20,6 +20,7 @@ import { useWardrobe } from '../context/WardrobeContext';
 
 const TYPES = [
   { value: 'top',    label: 'Top' },
+   { value: 'sweater', label: 'Sweater'},
   { value: 'bottom', label: 'Bottom' },
   { value: 'shoes',  label: 'Shoes' },
   { value: 'hat',    label: 'Hat' },
