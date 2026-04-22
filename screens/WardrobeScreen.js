@@ -21,7 +21,7 @@ const H_PAD = 16;
 const ITEM_SIZE = Math.floor((SCREEN_WIDTH - H_PAD * 2 - ITEM_GAP * 2) / 3);
 
 export default function WardrobeScreen() {
-  const { items, addItem, removeItem, setLoading, loading } = useWardrobe();
+  const { items, addItem, removeItem, setLoading, loading, loadSavedOutfits } = useWardrobe();
   const [activeFilter, setActiveFilter] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
 
@@ -34,11 +34,16 @@ export default function WardrobeScreen() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { loadItems(); }, []);
+  useEffect(() => {
+    // Load both wardrobe items and saved outfits on startup
+    loadItems();
+    loadSavedOutfits();
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadItems();
+    await loadSavedOutfits();
     setRefreshing(false);
   };
 

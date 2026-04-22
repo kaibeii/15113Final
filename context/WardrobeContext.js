@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { saveSavedOutfit, fetchSavedOutfits, deleteSavedOutfitApi } from '../api/wardrobeApi';
 
 const WardrobeContext = createContext(null);
 
@@ -10,13 +11,8 @@ export function WardrobeProvider({ children }) {
 
   const addItem = useCallback((item) => {
     setItems((prev) => {
-      // Check if item with this ID already exists
       const exists = prev.some((existingItem) => existingItem._id === item._id);
-      if (!exists) {
-        // If item doesn't exist, add it
-        return [item, ...prev];
-      }
-      // If it exists, replace it (don't create duplicates)
+      if (!exists) return [item, ...prev];
       return prev.map((existingItem) => (existingItem._id === item._id ? item : existingItem));
     });
   }, []);
@@ -27,29 +23,59 @@ export function WardrobeProvider({ children }) {
 
   const updateItem = useCallback((updatedItem) => {
     setItems((prev) => {
-      // Check if item with this ID already exists
       const exists = prev.some((item) => item._id === updatedItem._id);
-      if (!exists) {
-        // If item doesn't exist, add it
-        return [updatedItem, ...prev];
-      }
-      // If it exists, replace it (don't create duplicates)
+      if (!exists) return [updatedItem, ...prev];
       return prev.map((item) => (item._id === updatedItem._id ? updatedItem : item));
     });
   }, []);
 
-  const saveOutfit = useCallback((outfit) => {
-    const saved = {
-      ...outfit,
-      savedAt: new Date().toISOString(),
-      id: Date.now().toString(),
-    };
-    setSavedOutfits((prev) => [saved, ...prev]);
-    return saved;
+  // Load saved outfits from backend on startup
+  const loadSavedOutfits = useCallback(async () => {
+    try {
+      const outfits = await fetchSavedOutfits();
+      // Normalize _id to id for consistency with frontend
+      const normalized = outfits.map((o) => ({
+        ...o,
+        id: o._id,
+        savedAt: o.savedAt || new Date().toISOString(),
+      }));
+      setSavedOutfits(normalized);
+    } catch (err) {
+      console.log('Could not load saved outfits — backend may not be running');
+    }
   }, []);
 
-  const removeSavedOutfit = useCallback((id) => {
+  const saveOutfit = useCallback(async (outfit) => {
+    try {
+      const saved = await saveSavedOutfit(outfit);
+      const normalized = {
+        ...saved,
+        id: saved._id,
+        savedAt: saved.savedAt || new Date().toISOString(),
+      };
+      setSavedOutfits((prev) => [normalized, ...prev]);
+      return normalized;
+    } catch (err) {
+      // Fallback to local save if backend unreachable
+      const local = {
+        ...outfit,
+        savedAt: new Date().toISOString(),
+        id: Date.now().toString(),
+      };
+      setSavedOutfits((prev) => [local, ...prev]);
+      return local;
+    }
+  }, []);
+
+  const removeSavedOutfit = useCallback(async (id) => {
+    // Remove from local state immediately
     setSavedOutfits((prev) => prev.filter((o) => o.id !== id));
+    // Then delete from backend
+    try {
+      await deleteSavedOutfitApi(id);
+    } catch (err) {
+      console.log('Could not delete saved outfit from backend');
+    }
   }, []);
 
   const getItemsByType = useCallback(
@@ -74,6 +100,7 @@ export function WardrobeProvider({ children }) {
         updateItem,
         saveOutfit,
         removeSavedOutfit,
+        loadSavedOutfits,
         getItemsByType,
       }}
     >
