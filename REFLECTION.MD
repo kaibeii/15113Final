@@ -1,21 +1,37 @@
-Describe your process. At a high level, how did you go about creating this project?
-- I used ChatGPT to create a plan from my idea and give a step by step plan. I went  through it and changed some stuff with how it was planning and asked questions to better understand how the app would work. I moved into Claude to refine the plan further. I asked it to re-outline the process and walk through each stage in more detail. At this point, I also described my intended UI/UX flow, and used it to generate rough mockups so I could visualize the experience before building. AWith that foundation, I used Claude to generate the initial frontend code, focusing only on core features without backend integration. After getting the interface to a stable place, I shifted to backend development, working through the logic step-by-step including setup and API integration. I also used copilot after I ran out of credits in Claude and worked through a lot of the bugs I was finding. After  that, I would then bring updated code back into Claude to review changes, validate logic, and identify any additional improvements. I finalized some other things in Claude as well and asked for a list of things to check for bugs before deploying the backend to Render. After that, I changed some front end styling and edited it myself and deployed to Render. 
+# Project Reflection
+**I used Claude to format this into nice MD format. I wrote everything else without AI, just used for formatting. 
+---
 
+## Describe your process. At a high level, how did you go about creating this project?
 
+I used ChatGPT to create a plan from my idea and give a step by step plan. I went through it and changed some stuff with how it was planning and asked questions to better understand how the app would work. I moved into Claude to refine the plan further. I asked it to re-outline the process and walk through each stage in more detail. At this point, I also described my intended UI/UX flow, and used it to generate rough mockups so I could visualize the experience before building. With that foundation, I used Claude to generate the initial frontend code, focusing only on core features without backend integration. After getting the interface to a stable place, I shifted to backend development, working through the logic step-by-step including setup and API integration. I also used Copilot after I ran out of credits in Claude and worked through a lot of the bugs I was finding. After that, I would then bring updated code back into Claude to review changes, validate logic, and identify any additional improvements. I finalized some other things in Claude as well and asked for a list of things to check for bugs before deploying the backend to Render. After that, I changed some front end styling and edited it myself and deployed to Render.
 
-What AI tools and strategies did you use? What models did you choose, and were you using them in a browser chat, in something like Cursor, in the command line, etc? Did you use an agentic process like in HW8, or something else?
-- I didn't really use an agentic process in the same way as in HW8, but I incorporated some elements of it. I used ChatGPT in browser at the beginning, Claude in browser, and copilot in VS code. 
+---
 
+## What AI tools and strategies did you use? What models did you choose, and were you using them in a browser chat, in something like Cursor, in the command line, etc? Did you use an agentic process like in HW8, or something else?
 
-Why did you make the choices above?
-- I thought it would be more helpful to get different opinions at the start and narrow down how it was going to be completed. I also used Github Copilot only because I ran out of Claude usage while working on it for a couple of hours, but I still wanted to debug so I used copilot to do so. I brought changes made with Copilot back into Claude later and asked it to review the updates and check for issues. I also thought it could be helpful to get more insight on the project to see if there was anything any agent missed. 
+I didn't really use an agentic process in the same way as in HW8, but I incorporated some elements of it. I used ChatGPT in browser at the beginning, Claude in browser, and Copilot in VS Code.
 
-What changed from your pre-113 approach? Compare your approach to how you might have approached the project before 15-113. What has changed, if anything? Do you feel more or less well-equipped to create projects like this within a reasonable time frame?
-- I think I would not have asked any of the agents to walk me through what they were planning on doing or creating. I now ask the agents to provide a planand walk through all steps before moving forward, and will do each step piece by piece. I do think I am more equipped as I can get better results in a smaller time frame, and spend less time working on issues with the core of whatever I am creating rather than smaller details. 
+---
 
+## Why did you make the choices above?
 
-What might you do with this project with more time?
-- With more time, I would focus on improving both the outfit generation logic and the overall flexibility of the system.
+I thought it would be more helpful to get different opinions at the start and narrow down how it was going to be completed. I also used Github Copilot only because I ran out of Claude usage while working on it for a couple of hours, but I still wanted to debug so I used Copilot to do so. I brought changes made with Copilot back into Claude later and asked it to review the updates and check for issues. I also thought it could be helpful to get more insight on the project to see if there was anything any agent missed.
+
+---
+
+## What changed from your pre-113 approach? Compare your approach to how you might have approached the project before 15-113. What has changed, if anything? Do you feel more or less well-equipped to create projects like this within a reasonable time frame?
+
+I think I would not have asked any of the agents to walk me through what they were planning on doing or creating. I now ask the agents to provide a plan and walk through all steps before moving forward, and will do each step piece by piece. I do think I am more equipped as I can get better results in a smaller time frame, and spend less time working on issues with the core of whatever I am creating rather than smaller details.
+
+---
+
+## What might you do with this project with more time?
+
+With more time, I would focus on improving both the outfit generation logic and the overall flexibility of the system.
+
 Right now, outfit generation is primarily based on simple color matching rules. Neutral items (black, white, grey, beige, brown, navy) can pair with almost anything, while colored items try to match with the same or a complementary color before defaulting to neutrals. Patterned or multicolor pieces are restricted to pairing with neutrals. This worked reasonably well for my own wardrobe, which is largely neutral, but it would likely produce repetitive or less cohesive results for users with more diverse color palettes.
-prove this, I would expand the logic to better handle a wider range of color relationships and styles—such as incorporating complementary, analogous, or contrast-based color matching, as well as introducing more variation so outfits feel less one-dimensional.
-I would also add more user control to the generation process. For example, I’d include filters that allow users to specify preferences like clothing type (e.g., jacket, dress, jeans) or color before generating an outfit. Currently, items are grouped broadly (e.g., all bottoms in one category), but I would break these down into more specific subcategories—such as jeans, dress pants, shorts, and skirts, or t-shirts vs. long sleeves. This would improve both filtering and the quality of generated outfits by enabling more context-aware combinations.
+
+To improve this, I would expand the logic to better handle a wider range of color relationships and styles — such as incorporating complementary, analogous, or contrast-based color matching, as well as introducing more variation so outfits feel less one-dimensional.
+
+I would also add more user control to the generation process. For example, I'd include filters that allow users to specify preferences like clothing type (e.g., jacket, dress, jeans) or color before generating an outfit. Currently, items are grouped broadly (e.g., all bottoms in one category), but I would break these down into more specific subcategories — such as jeans, dress pants, shorts, and skirts, or t-shirts vs. long sleeves. This would improve both filtering and the quality of generated outfits by enabling more context-aware combinations.
