@@ -11,6 +11,7 @@ import WardrobeScreen from './screens/WardrobeScreen';
 import CameraScreen from './screens/CameraScreen';
 import OutfitsScreen from './screens/OutfitsScreen';
 import { COLORS, RADIUS, SPACING } from './constants/theme';
+import styles from './styles/index';
 
 const Tab = createBottomTabNavigator();
 
@@ -92,54 +93,3 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  tabBar: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    backgroundColor: COLORS.white,
-    borderTopWidth: 0.5,
-    borderTopColor: '#E5E5E0',
-    paddingBottom: SPACING.sm,
-    paddingTop: SPACING.xs,
-    paddingHorizontal: SPACING.sm,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 3,
-    paddingVertical: SPACING.xs,
-  },
-  tabLabel: {
-    fontSize: 10,
-    color: COLORS.gray400,
-    fontWeight: '400',
-  },
-  tabLabelActive: {
-    color: COLORS.purple600,
-    fontWeight: '500',
-  },
-  plusWrap: {
-    flex: 0.8,
-    alignItems: 'center',
-    paddingBottom: SPACING.sm,
-  },
-  plusBtn: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: COLORS.purple600,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-    // Lift it above the tab bar
-    marginTop: -20,
-    shadowColor: COLORS.purple600,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  plusBtnActive: {
-    backgroundColor: COLORS.purple800,
-  },
-});

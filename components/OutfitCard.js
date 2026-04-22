@@ -151,7 +151,7 @@ export default function OutfitCard({ outfit, onDelete, showDate = true }) {
         presentationStyle="pageSheet"
         onRequestClose={closeModal}
       >
-        <SafeAreaView style={styles.modalContainer} edges={['top']}>
+       <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={closeModal} hitSlop={8}>
               <Ionicons name="close" size={24} color={COLORS.black} />
