@@ -68,7 +68,7 @@ function CustomTabBar({ state, descriptors, navigation }) {
             <Ionicons
               name={iconName}
               size={22}
-              color={isFocused ? COLORS.purple600 : COLORS.gray400}
+              color={isFocused ? COLORS.black : COLORS.gray400}
             />
             <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
               {route.name}
@@ -81,7 +81,7 @@ function CustomTabBar({ state, descriptors, navigation }) {
 }
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'Inter-Light':    require('./assets/fonts/Inter-Light.ttf'),
     'Inter-Regular':  require('./assets/fonts/Inter-Regular.ttf'),
     'Inter-Medium':   require('./assets/fonts/Inter-Medium.ttf'),
@@ -89,10 +89,13 @@ export default function App() {
   });
 
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) await SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) return null;
+  // Show nothing until fonts are ready or failed
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
